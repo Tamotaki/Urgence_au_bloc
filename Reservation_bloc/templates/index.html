@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BLOC MANAGER — SYSTÈME COMPROMIS</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"/>
+</head>
+<body>
+  <!-- Pluie hexadécimale en arrière-plan -->
+  <canvas id="matrix-canvas"></canvas>
+
+  <!-- Ligne de scan CRT -->
+  <div class="scanline"></div>
+
+  <div class="container">
+
+    <!-- En-tête hôpital glitché -->
+    <div class="hospital-header">
+      <div class="hospital-logo">🏥</div>
+      <div class="hospital-name glitch" data-text="HÔPITAL SAINT-LOUIS — BLOC OPÉRATOIRE">
+        HÔPITAL SAINT-LOUIS — BLOC OPÉRATOIRE
+      </div>
+      <div class="system-id">SYSTÈME : BLOCMANAGER v3.2.1 &nbsp;|&nbsp; ID: SL-BO-447</div>
+    </div>
+
+    <!-- Bannière RANSOMWARE -->
+    <div class="ransom-banner">
+      <div class="warning-icon blink">⚠</div>
+      <div class="ransom-title">RANSOMWARE DÉTECTÉ</div>
+      <div class="ransom-subtitle">VOS FICHIERS ONT ÉTÉ CHIFFRÉS</div>
+      <div class="warning-icon blink">⚠</div>
+    </div>
+
+    <!-- Message de rançon -->
+    <div class="ransom-message">
+      <div class="ransom-text">
+        <span class="highlight">ATTENTION ADMINISTRATEUR :</span>
+        Tous les plannings opératoires, dossiers patients et accès au
+        <span class="highlight">Gestionnaire de Blocs</span> ont été
+        <span class="red">CHIFFRÉS</span> avec l'algorithme AES-256.<br/><br/>
+        Vous avez <span class="countdown-inline" id="countdown-inline">--:--:--</span>
+        pour vous conformer aux instructions avant suppression définitive des données.
+      </div>
+      <div class="bitcoin-box">
+        <div class="btc-label">💰 RANÇON EXIGÉE : <span class="red">0.85 BTC</span></div>
+        <div class="btc-address" id="btc-addr">1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2</div>
+        <div class="btc-hint">Paiement à effectuer dans le délai imparti</div>
+      </div>
+    </div>
+
+    <!-- Blocs chiffrés animés -->
+    <div class="encrypted-blocs">
+      <div class="bloc-label">📋 DONNÉES DU PLANNING — ÉTAT DU CHIFFREMENT :</div>
+      <div class="hex-grid" id="hex-grid"></div>
+    </div>
+
+    <!-- Séparateur -->
+    <div class="divider">
+      <span>[ ACCÈS SYSTÈME D'URGENCE ]</span>
+    </div>
+
+    <!-- Formulaire de login -->
+    <div class="login-section">
+      <div class="login-title">🔐 AUTHENTIFICATION ADMINISTRATEUR</div>
+      <div class="login-subtitle">Accès restreint au personnel autorisé</div>
+
+      {% if error %}
+      <div class="error-box">⛔ {{ error }}</div>
+      {% endif %}
+
+      <form action="/login" method="POST" class="login-form" autocomplete="off">
+        <div class="form-group">
+          <label for="username">Identifiant</label>
+          <input type="text" id="username" name="username"
+                 placeholder="ex: admin"
+                 autocomplete="off" spellcheck="false"/>
+        </div>
+        <div class="form-group">
+          <label for="password">Mot de passe</label>
+          <input type="password" id="password" name="password"
+                 placeholder="••••••••"
+                 autocomplete="new-password"/>
+        </div>
+        <button type="submit" class="login-btn">
+          <span>ACCÉDER AU SYSTÈME</span>
+        </button>
+      </form>
+
+      <div class="hint-box">
+        <details>
+          <summary>🛠️ Support technique</summary>
+          <p>Contact DSI : <code>dsi-interne@saint-louis.fr</code></p>
+          <p>Ticket urgence : <code>#INC-2024-8847</code></p>
+        </details>
+      </div>
+    </div>
+
+    <!-- Bas de page -->
+    <div class="footer">
+      <span class="blink-slow">■</span>
+      SESSION CHIFFRÉE &nbsp;|&nbsp; IP TRACÉE &nbsp;|&nbsp;
+      TOUTE TENTATIVE NON AUTORISÉE EST ENREGISTRÉE
+      <span class="blink-slow">■</span>
+    </div>
+
+  </div>
+
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

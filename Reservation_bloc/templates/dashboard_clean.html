@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BlocManager — Tableau de bord</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style_clean.css') }}"/>
+</head>
+<body class="dashboard-body">
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="nav-brand">
+      <span class="nav-icon">🏥</span>
+      <span class="nav-title">BlocManager</span>
+      <span class="nav-hospital">Hôpital Saint-Louis</span>
+    </div>
+    <div class="nav-right">
+      <div class="nav-user">
+        <span class="user-avatar">{{ user[0]|upper }}</span>
+        <div class="user-info">
+          <span class="user-name">{{ user }}</span>
+          <span class="user-role">{{ role }}</span>
+        </div>
+      </div>
+      <a href="/logout" class="btn-logout">Déconnexion</a>
+    </div>
+  </nav>
+
+  <div class="dashboard-layout">
+
+    <!-- Sidebar navigation -->
+    <aside class="sidebar">
+      <nav class="side-nav">
+        <a href="#" class="side-link active">📅 Planning du jour</a>
+        <a href="#" class="side-link">🏨 Salles opératoires</a>
+        <a href="#" class="side-link">👨‍⚕️ Chirurgiens</a>
+        <a href="#" class="side-link">📋 Dossiers patients</a>
+        <a href="#" class="side-link">📦 Stock matériel</a>
+        <a href="#" class="side-link">📊 Rapports</a>
+        {% if role == "admin" %}
+        <div class="side-separator"></div>
+        <a href="#" class="side-link admin-link">⚙️ Administration</a>
+        {% endif %}
+      </nav>
+    </aside>
+
+    <!-- Contenu principal -->
+    <main class="main-content">
+
+      <!-- En-tête -->
+      <div class="content-header">
+        <div>
+          <h1 class="page-title">Planning du jour</h1>
+          <p class="page-subtitle" id="current-date">Chargement de la date…</p>
+        </div>
+        <button class="btn-primary">+ Nouvelle réservation</button>
+      </div>
+
+      <!-- Cartes de statut -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon green">✅</div>
+          <div class="stat-body">
+            <div class="stat-number">6</div>
+            <div class="stat-desc">Actes planifiés</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon blue">🏨</div>
+          <div class="stat-body">
+            <div class="stat-number">4</div>
+            <div class="stat-desc">Blocs disponibles</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon orange">⏳</div>
+          <div class="stat-body">
+            <div class="stat-number">2</div>
+            <div class="stat-desc">En cours</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon red">🚨</div>
+          <div class="stat-body">
+            <div class="stat-number">0</div>
+            <div class="stat-desc">Urgences</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tableau des réservations -->
+      <div class="table-card">
+        <div class="table-header">
+          <h2>Réservations — Blocs opératoires</h2>
+          <div class="table-actions">
+            <input type="text" class="search-input" placeholder="🔍 Rechercher…" id="search"/>
+            <select class="filter-select" id="filter-salle">
+              <option value="">Toutes les salles</option>
+              <option>Bloc A</option>
+              <option>Bloc B</option>
+              <option>Bloc C</option>
+              <option>Bloc D</option>
+            </select>
+          </div>
+        </div>
+        <div class="table-wrapper">
+          <table class="reservations-table" id="table-resa">
+            <thead>
+              <tr>
+                <th>Salle</th>
+                <th>Chirurgien</th>
+                <th>Début</th>
+                <th>Fin</th>
+                <th>Type d'acte</th>
+                <th>Statut</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for r in reservations %}
+              <tr data-salle="{{ r[1] }}">
+                <td><span class="salle-badge salle-{{ r[1][-1]|lower }}">{{ r[1] }}</span></td>
+                <td class="chirurgien">{{ r[2] }}</td>
+                <td>{{ r[3] }}</td>
+                <td>{{ r[4] }}</td>
+                <td>{{ r[5] }}</td>
+                <td><span class="status-badge status-{{ r[6] }}">{{ r[6] }}</span></td>
+                <td class="actions-cell">
+                  <button class="btn-icon" title="Voir">👁</button>
+                  <button class="btn-icon" title="Modifier">✏️</button>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script src="{{ url_for('static', filename='script_clean.js') }}"></script>
+</body>
+</html>
