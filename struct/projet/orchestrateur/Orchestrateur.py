@@ -73,7 +73,7 @@ def game(sid):
     return redirect(f"http://{host}:{sessions[sid]['port']}/")
 
 
-@app.route("/api/status/<sid>")
+@app.route("/api/status/<sid>") # Axel peut afficher le compte à renbours côté frontend sans modif
 def status(sid):
     if sid not in sessions:
         return jsonify({"error": "session introuvable"}), 404
@@ -105,7 +105,16 @@ def healthz():
 
 
 # Démarrage
-
 if __name__ == "__main__":
     threading.Thread(target=cleanup, daemon=True).start()
     app.run(host="0.0.0.0", port=5000, debug=False)
+
+
+# Déploiement de l'orchetsrateur :
+# 1. Construire l'image orchestrateur
+# docker build -t urgence-orchestrator .
+# 2. Lancer (avec accès au socket Docker pour spawner les conteneurs)
+# docker run -d \
+#   -p 5000:5000 \
+#   -v /var/run/docker.sock:/var/run/docker.sock \
+#   urgence-orchestrator
