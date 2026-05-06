@@ -38,11 +38,12 @@ def cleanup():
 
 # Routes
 
+# Page d'accueil → redirige vers /play
 @app.route("/")
 def index():
     return redirect("/play")
 
-
+# Lance un conteneur challenge et redirige le joueur vers sa session
 @app.route("/play")
 def play():
     port = next_port()
@@ -64,7 +65,7 @@ def play():
     sessions[sid] = {"container_id": r.stdout.strip(), "port": port, "started_at": time.time()}
     return redirect(f"/game/{sid}")
 
-
+# Redirige le joueur vers son conteneur (404 si session expirée)
 @app.route("/game/<sid>")
 def game(sid):
     if sid not in sessions:
@@ -72,7 +73,7 @@ def game(sid):
     host = request.host.split(":")[0]
     return redirect(f"http://{host}:{sessions[sid]['port']}/")
 
-
+# Retourne le temps restant de la session (JSON) — utilisé par le frontend
 @app.route("/api/status/<sid>") # Axel peut afficher le compte à renbours côté frontend sans modif
 def status(sid):
     if sid not in sessions:
@@ -82,7 +83,7 @@ def status(sid):
     return jsonify({"session_id": sid, "port": s["port"],
                     "elapsed": elapsed, "remaining": max(0, TTL - elapsed)})
 
-
+# Arrête une session et supprime le conteneur associé
 @app.route("/api/stop/<sid>", methods=["POST"])
 def stop(sid):
     if sid not in sessions:
@@ -90,7 +91,7 @@ def stop(sid):
     kill(sid)
     return jsonify({"ok": True})
 
-
+# Liste toutes les sessions actives pour débugger
 @app.route("/api/sessions")
 def list_sessions():
     now = time.time()
@@ -98,7 +99,7 @@ def list_sessions():
                      "remaining": max(0, TTL - int(now - s["started_at"]))}
                     for sid, s in sessions.items()])
 
-
+# Vérifie que le serveur tourne pour Docker/Nginx
 @app.route("/healthz")
 def healthz():
     return jsonify({"status": "ok", "sessions": len(sessions)})
