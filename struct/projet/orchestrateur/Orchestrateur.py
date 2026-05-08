@@ -38,7 +38,7 @@ def cleanup():
 
 # Routes
 
-# Page d'accueil → redirige vers /play
+# Page d'accueil : redirige vers /play
 @app.route("/")
 def index():
     return redirect("/play")
