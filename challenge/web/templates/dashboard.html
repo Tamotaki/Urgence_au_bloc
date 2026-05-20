@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <title>BLOC MANAGER — ACCÈS OBTENU</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"/>
+</head>
+<body>
+  <canvas id="matrix-canvas"></canvas>
+  <div class="scanline"></div>
+  <div class="container">
+    <div class="hospital-header">
+      <div class="hospital-logo">🏥</div>
+      <div class="hospital-name glitch" data-text="HÔPITAL SAINT-LOUIS — ACCÈS SYSTÈME">
+        HÔPITAL SAINT-LOUIS — ACCÈS SYSTÈME
+      </div>
+    </div>
+
+    <div class="access-granted-banner">
+      <div class="ag-title">✅ ACCÈS OBTENU</div>
+      <div class="ag-sub">Connecté en tant que : <span class="highlight">{{ user }}</span>
+        &nbsp;|&nbsp; Rôle : <span class="red">{{ role }}</span></div>
+    </div>
+
+    <div class="ransom-message" style="margin-top:1rem;">
+      <div class="ransom-text">
+        Vous avez réussi à pénétrer le système compromis.<br/>
+        Les données chiffrées sont accessibles depuis ce panneau.<br/>
+        <span class="red">Prochaine étape :</span> restaurer les sauvegardes et patcher la vulnérabilité.
+      </div>
+    </div>
+
+    <div class="divider"><span>[ PANNEAU D'ADMINISTRATION ]</span></div>
+    <div class="admin-panel">
+      <div class="admin-card locked">📁 Planning Semaine 47 — <span class="red">CHIFFRÉ</span></div>
+      <div class="admin-card locked">👨‍⚕️ Dossiers Chirurgiens — <span class="red">CHIFFRÉ</span></div>
+      <div class="admin-card locked">🏨 Salles Opératoires — <span class="red">CHIFFRÉ</span></div>
+      <div class="admin-card locked">💉 Stock Matériel — <span class="red">CHIFFRÉ</span></div>
+    </div>
+
+    <a href="/logout" class="login-btn" style="display:inline-block;margin-top:2rem;text-decoration:none;">
+      ⏏ SE DÉCONNECTER
+    </a>
+  </div>
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
