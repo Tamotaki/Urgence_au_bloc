@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BlocManager — Connexion</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style_clean.css') }}"/>
+</head>
+<body>
+  <div class="page-wrapper">
+
+    <!-- Barre latérale décorative -->
+    <div class="sidebar-accent"></div>
+
+    <div class="login-container">
+
+      <!-- Logo hôpital -->
+      <div class="brand">
+        <div class="brand-icon">🏥</div>
+        <div class="brand-info">
+          <div class="brand-name">Hôpital Saint-Louis</div>
+          <div class="brand-sub">Gestion des Blocs Opératoires</div>
+        </div>
+      </div>
+
+      <div class="login-card">
+        <div class="card-header">
+          <h1>Connexion</h1>
+          <p>Accès réservé au personnel soignant autorisé</p>
+        </div>
+
+        {% if error %}
+        <div class="alert alert-error">
+          <span class="alert-icon">⚠</span> {{ error }}
+        </div>
+        {% endif %}
+
+        <form action="/secure/login" method="POST" class="login-form">
+          <div class="form-group">
+            <label for="username">Identifiant</label>
+            <div class="input-wrapper">
+              <span class="input-icon">👤</span>
+              <input type="text" id="username" name="username"
+                     placeholder="Votre identifiant" required autocomplete="username"/>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="password">Mot de passe</label>
+            <div class="input-wrapper">
+              <span class="input-icon">🔒</span>
+              <input type="password" id="password" name="password"
+                     placeholder="Votre mot de passe" required autocomplete="current-password"/>
+            </div>
+          </div>
+          <button type="submit" class="btn-login">Se connecter</button>
+        </form>
+
+        <div class="card-footer">
+          <a href="#">Mot de passe oublié ?</a>
+          <span class="separator">·</span>
+          <a href="#">Contacter la DSI</a>
+        </div>
+      </div>
+
+      <div class="security-badge">
+        <span>🔐</span> Connexion sécurisée — TLS 1.3
+      </div>
+
+    </div>
+
+    <!-- Panneau droit illustratif -->
+    <div class="hero-panel">
+      <div class="hero-content">
+        <div class="hero-icon">⚕️</div>
+        <h2>BlocManager</h2>
+        <p>Système de gestion et de réservation des salles opératoires de l'Hôpital Saint-Louis</p>
+        <div class="hero-stats">
+          <div class="stat">
+            <div class="stat-value">4</div>
+            <div class="stat-label">Blocs actifs</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value">12</div>
+            <div class="stat-label">Chirurgiens</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value">6</div>
+            <div class="stat-label">Actes aujourd'hui</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <script src="{{ url_for('static', filename='script_clean.js') }}"></script>
+</body>
+</html>
