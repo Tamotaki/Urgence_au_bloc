@@ -1,0 +1,69 @@
+╔══════════════════════════════════════════════════╗
+║       HÔPITAL SAINT-LOUIS — SERVEUR INTERNE      ║
+║              Accès restreint                     ║
+╚══════════════════════════════════════════════════╝
+
+ ALERTE SECURITE - NIVEAU CRITIQUE
+ 
+   Date detection  : 18/11/2024 03:52 UTC
+   Incident #      : HSL-INC-2024-0847
+   Statut          : COMPROMIS - RANSOMWARE ACTIF
+   Groupe identifie: S0lar1s (signature reconnue)
+   Perimetre       : Serveur BlocManager + sauvegardes /tmp
+ 
+   Services touches :
+     [X] Plannings bloc operatoire
+     [X] Fichiers patients (lecture seule, integres)
+     [X] Sauvegardes systeme chiffrees (XOR)
+     [OK] Reseau interne - isole par le SOC a 03:48
+ 
+ 
+   AVERTISSEMENT LEGAL
+ 
+   Tout acces a ce systeme est journalise et surveille en temps reel
+   par le SOC interne. Les connexions non autorisees sont passibles
+   de poursuites au titre des articles 323-1 a 323-7 du Code penal.
+ 
+   En vous connectant, vous reconnaissez :
+     - Etre un operateur mandate par la cellule de crise DSI
+     - Accepter la journalisation integrale de votre session
+     - Agir dans le strict cadre du plan de continuite (PCA-HSL-v4)
+ 
+ 
+   MISSION ACTIVE
+ 
+   Vous etes l'operateur de garde appele pour la remediation.
+ 
+   Objectif       : Restaurer les sauvegardes du bloc operatoire
+                    avant la reprise des activites a 07:00.
+ 
+   Temps imparti  : ~3h (chirurgies programmees a partir de 07:30)
+ 
+   Procedure :
+     1. Analyser les journaux d'acces web
+        /var/log/apache2/access.log
+        /var/log/apache2/error.log
+ 
+     2. Identifier la trace laissee par l'attaquant
+        (les IOC sont dans les logs - patience et grep)
+ 
+     3. Recuperer la cle de dechiffrement
+        (l'attaquant a ete negligent)
+ 
+     4. Dechiffrer la sauvegarde
+        python3 /tmp/ransomware_fake.py /tmp/backup.xor <CLE>
+ 
+     5. Extraire la cle de restauration systeme (flag)
+        Format attendu : CTF{xxxxx_xxxxx_xxxxx}
+ 
+ 
+   OUTILS DISPONIBLES SUR CE SERVEUR
+ 
+     grep, awk, sed, less, tail, head, cut, sort, uniq
+     python3, xxd, file, strings
+     curl, nc, ss
+ 
+   Contact SOC d'astreinte : soc-oncall@hsl.intra (poste 4242)
+ 
+ 
+   Bonne chance, operateur. La vie de patients depend de vous.
