@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  orchestrateur:
+    build: ./orchestrateur
+    ports:
+      - "5000:5000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - CHALLENGE_IMAGE=image_gabriela:latest  # à remplacer par le vrai nom
+    restart: unless-stopped
