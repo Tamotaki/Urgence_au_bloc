@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BlocManager CTF — Système</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Syne:wght@700;800&display=swap');
+    :root {
+      --bg:#080a0d;--surface:#0f1115;--surface2:#161920;--surface3:#1c2028;
+      --border:#21252e;--border-hi:#333844;--text:#d4d8e4;--text-muted:#5a6075;
+      --text-dim:#2e3240;--red:#e63946;--red-dim:#2a0d10;--amber:#f4a261;
+      --amber-dim:#2e1a08;--green:#52b788;--green-dim:#0b2418;--blue:#4cc9f0;
+      --blue-dim:#0b2030;--mono:'IBM Plex Mono',monospace;--display:'Syne',sans-serif;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body{background:var(--bg);color:var(--text);font-family:var(--mono);font-size:13px;min-height:100vh;display:flex;flex-direction:column;}
+    body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(to bottom,transparent 0px,transparent 2px,rgba(0,0,0,.08) 2px,rgba(0,0,0,.08) 3px);pointer-events:none;z-index:9999;}
+    .topbar{display:flex;align-items:center;height:40px;border-bottom:1px solid var(--border);background:var(--surface);flex-shrink:0;padding:0 1rem;position:sticky;top:0;z-index:100;}
+    .tb-brand{display:flex;align-items:center;gap:.5rem;padding-right:1.5rem;border-right:1px solid var(--border);font-size:.72rem;font-family:var(--display);font-weight:700;letter-spacing:.05em;}
+    .blink-dot{width:7px;height:7px;border-radius:50%;background:var(--red);animation:pulse-dot 1.5s ease-in-out infinite;}
+    @keyframes pulse-dot{0%,100%{opacity:1;box-shadow:0 0 6px var(--red);}50%{opacity:.3;box-shadow:none;}}
+    .tb-tabs{display:flex;align-items:stretch;height:100%;flex:1;padding-left:.5rem;}
+    .tb-tab{display:flex;align-items:center;padding:0 1rem;height:100%;font-size:.7rem;letter-spacing:.04em;color:var(--text-muted);text-decoration:none;border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap;background:none;}
+    .tb-tab:hover{color:var(--text);background:var(--surface2);}
+    .tb-tab.active{color:var(--amber);border-bottom-color:var(--amber);}
+    .tb-right{display:flex;align-items:center;gap:1rem;padding-left:1rem;border-left:1px solid var(--border);font-size:.68rem;color:var(--text-muted);}
+    .timer-display{display:flex;align-items:center;gap:.4rem;color:var(--amber);font-weight:600;}
+    .timer-display.urgent{color:var(--red);animation:pulse-dot .8s ease-in-out infinite;}
+    .pill-user{display:flex;align-items:center;gap:.4rem;padding:.25rem .65rem;border-radius:100px;background:var(--surface2);border:1px solid var(--border-hi);font-size:.65rem;}
+    .avatar{width:16px;height:16px;border-radius:50%;background:var(--amber-dim);border:1px solid var(--amber);color:var(--amber);display:flex;align-items:center;justify-content:center;font-size:.58rem;font-weight:600;}
+    .game-layout{display:grid;grid-template-columns:240px 1fr 300px;flex:1;min-height:calc(100vh - 68px);}
+    .left-panel{border-right:1px solid var(--border);background:var(--surface);display:flex;flex-direction:column;}
+    .panel-header{padding:.75rem 1rem;border-bottom:1px solid var(--border);font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--text-muted);background:var(--surface2);}
+    .progress-section{padding:.85rem 1rem;border-bottom:1px solid var(--border);}
+    .prog-label{display:flex;justify-content:space-between;font-size:.65rem;color:var(--text-muted);margin-bottom:.4rem;}
+    .prog-bar{height:3px;background:var(--surface3);border-radius:2px;overflow:hidden;}
+    .prog-fill{height:100%;background:var(--green);border-radius:2px;}
+    .nav-section{flex:1;overflow-y:auto;padding:.5rem 0;}
+    .nav-group-label{padding:.75rem 1rem .3rem;font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;color:var(--text-dim);}
+    .nav-item{display:flex;align-items:center;gap:.65rem;padding:.5rem 1rem;text-decoration:none;transition:background .15s;font-size:.75rem;}
+    .nav-item:hover{background:var(--surface2);}
+    .nav-item.active{background:var(--surface3);}
+    .nav-icon{font-size:.85rem;width:16px;flex-shrink:0;}
+    .nav-label{flex:1;color:var(--text-muted);}
+    .nav-item.active .nav-label{color:var(--text);}
+    .nav-badge{font-size:.58rem;padding:.1rem .4rem;border-radius:3px;}
+    .nav-badge.done{background:var(--green-dim);color:var(--green);}
+    .nav-badge.active-b{background:var(--amber-dim);color:var(--amber);}
+    .nav-badge.locked{background:var(--surface3);color:var(--text-dim);}
+    .left-footer{border-top:1px solid var(--border);padding:.75rem 1rem;display:flex;flex-direction:column;gap:.5rem;}
+    .action-btn{display:flex;align-items:center;gap:.5rem;padding:.5rem .75rem;border-radius:4px;background:var(--surface2);border:1px solid var(--border);color:var(--text-muted);font-family:var(--mono);font-size:.68rem;cursor:pointer;transition:all .15s;text-decoration:none;}
+    .action-btn:hover{border-color:var(--border-hi);color:var(--text);}
+    .action-btn.danger:hover{border-color:var(--red);color:var(--red);background:var(--red-dim);}
+    .center-panel{display:flex;flex-direction:column;background:var(--bg);}
+    .pane-content{flex:1;overflow-y:auto;padding:1.5rem;}
+    .pane-title{font-family:var(--display);font-size:1.3rem;font-weight:700;margin-bottom:.3rem;}
+    .pane-subtitle{font-size:.72rem;color:var(--text-muted);margin-bottom:1.5rem;line-height:1.6;}
+    .alert{padding:.85rem 1rem;border-radius:5px;border-left:3px solid;font-size:.75rem;line-height:1.7;margin-bottom:1rem;}
+    .alert.info{background:var(--blue-dim);border-color:var(--blue);color:#a5e4f8;}
+    .term-block{background:var(--surface);border:1px solid var(--border);border-radius:6px;overflow:hidden;margin-bottom:1rem;}
+    .term-bar{display:flex;align-items:center;gap:.4rem;padding:.5rem .85rem;background:var(--surface2);border-bottom:1px solid var(--border);}
+    .d{width:9px;height:9px;border-radius:50%;}
+    .d.r{background:#e63946;}.d.y{background:#f4a261;}.d.g{background:#52b788;}
+    .fn{margin-left:.5rem;font-size:.65rem;color:var(--text-muted);}
+    .term-body{padding:1rem 1.1rem;line-height:1.85;font-size:.75rem;}
+    .t-prompt{color:var(--green);}.t-out{color:var(--text-muted);}.t-red{color:var(--red);}
+    .t-amber{color:var(--amber);}.t-green{color:var(--green);}
+    .t-cursor{display:inline-block;width:7px;height:1.1em;background:var(--green);vertical-align:text-bottom;animation:blink 1s step-end infinite;}
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+    .hex-display{display:flex;flex-wrap:wrap;gap:3px;padding:.85rem;background:var(--surface);border:1px solid var(--border);border-radius:6px;font-size:.65rem;color:var(--text-dim);margin-bottom:1rem;max-height:90px;overflow:hidden;}
+    .hex-byte{width:28px;text-align:center;padding:1px 2px;border-radius:2px;font-size:.6rem;animation:hex-flash 3s ease-in-out infinite;}
+    .hex-byte:nth-child(7n){color:var(--red);background:var(--red-dim);}
+    @keyframes hex-flash{0%,100%{opacity:.4}50%{opacity:1}}
+    .right-panel{border-left:1px solid var(--border);background:var(--surface);display:flex;flex-direction:column;overflow:hidden;}
+    .log-feed{flex:1;overflow-y:auto;padding:.5rem 0;font-size:.68rem;}
+    .log-entry{display:grid;grid-template-columns:auto 1fr;gap:.5rem;padding:.35rem .85rem;border-bottom:1px solid var(--border);align-items:start;}
+    .log-ts{font-size:.6rem;color:var(--text-dim);white-space:nowrap;margin-top:1px;}
+    .log-msg{color:var(--text-muted);line-height:1.5;}
+    .lv-err{color:var(--red);font-weight:600;}.lv-warn{color:var(--amber);}.lv-info{color:var(--blue);}.lv-ok{color:var(--green);}
+    .hint-section{border-top:1px solid var(--border);flex-shrink:0;}
+    .hint-toggle{width:100%;background:none;border:none;border-bottom:1px solid var(--border);color:var(--text-muted);font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;text-align:left;padding:.6rem .85rem;cursor:pointer;display:flex;justify-content:space-between;align-items:center;}
+    .hint-toggle:hover{color:var(--text);background:var(--surface2);}
+    .hint-body{padding:.75rem .85rem;font-size:.7rem;line-height:1.7;color:var(--text-muted);display:none;}
+    .hint-body.open{display:block;}
+    .h-tip{padding:.4rem .65rem;border-left:2px solid var(--amber);background:var(--amber-dim);color:#f7d6b4;border-radius:0 3px 3px 0;margin-bottom:.5rem;}
+    .bottom-bar{height:28px;border-top:1px solid var(--border);background:var(--surface2);display:flex;align-items:center;padding:0 1rem;gap:1.5rem;font-size:.6rem;color:var(--text-dim);}
+    .bb-item{display:flex;align-items:center;gap:.35rem;}
+    .bb-dot{width:5px;height:5px;border-radius:50%;}
+  </style>
+</head>
+<body>
+
+  <div class="topbar">
+    <div class="tb-brand"><div class="blink-dot"></div>BLOC MGR</div>
+    <div class="tb-tabs">
+      <a href="dashboard.html" class="tb-tab">⬛ Tableau de bord</a>
+      <a href="challenge.html" class="tb-tab">⚡ Challenge</a>
+      <a href="system.html" class="tb-tab active">💾 Système</a>
+      <a href="logs.html" class="tb-tab">📋 Logs Apache</a>
+    </div>
+    <div class="tb-right">
+      <div class="timer-display" id="main-timer">⏱ 01:59:59</div>
+      <div class="pill-user"><div class="avatar">A</div><span>admin</span></div>
+    </div>
+  </div>
+
+  <div class="game-layout">
+    <div class="left-panel">
+      <div class="panel-header">Navigation</div>
+      <div class="progress-section">
+        <div class="prog-label"><span>Progression</span><span>33%</span></div>
+        <div class="prog-bar"><div class="prog-fill" style="width:33%"></div></div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-group-label">Étapes</div>
+        <a href="challenge.html" class="nav-item"><span class="nav-icon">🔓</span><span class="nav-label">Reconnaissance</span><span class="nav-badge done">✓</span></a>
+        <a href="challenge.html" class="nav-item"><span class="nav-icon">💉</span><span class="nav-label">Injection SQL</span><span class="nav-badge active-b">EN COURS</span></a>
+        <a href="challenge.html" class="nav-item"><span class="nav-icon">🔑</span><span class="nav-label">Déchiffrement XOR</span><span class="nav-badge locked">verr.</span></a>
+        <a href="challenge.html" class="nav-item"><span class="nav-icon">🚩</span><span class="nav-label">Flag final</span><span class="nav-badge locked">verr.</span></a>
+        <div class="nav-group-label" style="margin-top:.75rem;">Ressources</div>
+        <a href="system.html" class="nav-item active"><span class="nav-icon">💾</span><span class="nav-label">État du système</span></a>
+        <a href="logs.html" class="nav-item"><span class="nav-icon">📋</span><span class="nav-label">Logs Apache</span></a>
+        <a href="#" class="nav-item"><span class="nav-icon">📁</span><span class="nav-label">Fichiers chiffrés</span></a>
+      </div>
+      <div class="left-footer">
+        <a href="#" class="action-btn">⚕ Dashboard normal</a>
+        <a href="#" class="action-btn danger">⏏ Déconnexion</a>
+      </div>
+    </div>
+
+    <div class="center-panel">
+      <div class="pane-content">
+        <div class="pane-title">État du système</div>
+        <div class="pane-subtitle">Vue en temps réel des fichiers chiffrés et de l'état des services.</div>
+        <div class="alert info">
+          <strong>[INFO]</strong> Chiffrement AES-256 actif sur /data/ — Clé hors d'atteinte.
+          Le fichier <code>/tmp/backup.xor</code> utilise un chiffrement XOR récupérable.
+          Retrouve la clé dans les <a href="logs.html" style="color:var(--blue)">logs Apache</a>.
+        </div>
+        <div style="margin-bottom:.5rem;font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted);">Aperçu hex — backup.xor</div>
+        <div class="hex-display" id="hex-grid"></div>
+        <div class="term-block">
+          <div class="term-bar"><div class="d r"></div><div class="d y"></div><div class="d g"></div><span class="fn">find /tmp -type f</span></div>
+          <div class="term-body">
+            <div><span class="t-prompt">root@saint-louis:~$ </span><span style="color:var(--text)">find /tmp -type f -ls</span></div>
+            <div><span class="t-out">drwxr-x   /tmp/</span></div>
+            <div><span class="t-amber">-rw-r--   /tmp/backup.xor          (4.2 KB)</span></div>
+            <div><span class="t-amber">-rw-r--   /tmp/decrypt.py           (0.8 KB)</span></div>
+            <div><span class="t-red">-rw-------  /tmp/RANSOM.txt          (0.3 KB)</span></div>
+            <div><span class="t-out">-rw-r--   /tmp/.hidden_clue          (0.1 KB)</span></div>
+            <div>&nbsp;</div>
+            <div><span class="t-prompt">root@saint-louis:~$ </span><span style="color:var(--text)">cat /tmp/.hidden_clue</span></div>
+            <div><span class="t-green">La clé est dans les logs. Cherche le User-Agent.</span></div>
+            <div><span class="t-green">→ Voir <a href="logs.html" style="color:var(--green)">Logs Apache</a> pour la suite.</span></div>
+            <div><span class="t-prompt">root@saint-louis:~$ </span><span class="t-cursor"></span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="right-panel">
+      <div class="panel-header">Journal en temps réel</div>
+      <div class="log-feed" id="live-log">
+        <div class="log-entry"><div class="log-ts">03:47</div><div class="log-msg"><span class="lv-warn">WARN</span> backup.xor created in /tmp</div></div>
+        <div class="log-entry"><div class="log-ts">03:47</div><div class="log-msg"><span class="lv-info">INFO</span> decrypt.py deployed</div></div>
+        <div class="log-entry"><div class="log-ts">now</div><div class="log-msg"><span class="lv-ok">OK</span> System view loaded</div></div>
+      </div>
+      <div class="hint-section">
+        <button class="hint-toggle" onclick="toggleHint('h1')">💡 Indice — backup.xor <span id="h1-arrow">▼</span></button>
+        <div class="hint-body" id="h1">
+          <div class="h-tip">Le fichier XOR est chiffrable avec une clé simple.</div>
+          <div class="h-tip">La clé se trouve dans les <a href="logs.html" style="color:var(--amber)">logs Apache</a>.</div>
+        </div>
+        <button class="hint-toggle" onclick="toggleHint('h2')">💡 Utilisation de decrypt.py <span id="h2-arrow">▼</span></button>
+        <div class="hint-body" id="h2">
+          <div class="h-tip"><code>python3 /tmp/decrypt.py &lt;clé&gt;</code></div>
+          <div class="h-tip">La clé est dans un User-Agent à 03:47.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom-bar">
+    <div class="bb-item"><div class="bb-dot" style="background:var(--red)"></div><span>Ransomware actif</span></div>
+    <div class="bb-item"><div class="bb-dot" style="background:var(--green)"></div><span>Session ouverte</span></div>
+    <div class="bb-item"><div class="bb-dot" style="background:var(--amber)"></div><span>SQLi exploitée</span></div>
+    <span style="margin-left:auto">BlocManager CTF v3.2.1 — Usage pédagogique</span>
+  </div>
+
+  <script>
+    let totalSeconds = 7199;
+    const timerEl = document.getElementById('main-timer');
+    const saved = sessionStorage.getItem('ctf_timer');
+    if (saved) totalSeconds = parseInt(saved);
+    function updateTimer() {
+      if (totalSeconds <= 0) { timerEl.textContent = '⏱ 00:00:00'; return; }
+      const h = String(Math.floor(totalSeconds/3600)).padStart(2,'0');
+      const m = String(Math.floor((totalSeconds%3600)/60)).padStart(2,'0');
+      const s = String(totalSeconds%60).padStart(2,'0');
+      timerEl.textContent = `⏱ ${h}:${m}:${s}`;
+      if (totalSeconds < 600) timerEl.classList.add('urgent');
+      sessionStorage.setItem('ctf_timer', totalSeconds);
+      totalSeconds--;
+    }
+    updateTimer(); setInterval(updateTimer, 1000);
+
+    function toggleHint(id) {
+      const body = document.getElementById(id);
+      const arrow = document.getElementById(id+'-arrow');
+      body.classList.toggle('open');
+      if (arrow) arrow.textContent = body.classList.contains('open') ? '▲' : '▼';
+    }
+
+    const hexGrid = document.getElementById('hex-grid');
+    for (let i = 0; i < 80; i++) {
+      const b = document.createElement('div');
+      b.className = 'hex-byte';
+      b.textContent = Math.floor(Math.random()*256).toString(16).padStart(2,'0').toUpperCase();
+      hexGrid.appendChild(b);
+    }
+    setInterval(() => {
+      hexGrid.querySelectorAll('.hex-byte').forEach(el => {
+        if (Math.random() > .85) el.textContent = Math.floor(Math.random()*256).toString(16).padStart(2,'0').toUpperCase();
+      });
+    }, 800);
+
+    const logEntries = [['now','info','XOR file size: 4289 bytes'],['now','warn','Hex view refreshing…']];
+    let logIdx = 0;
+    function appendLog() {
+      const feed = document.getElementById('live-log');
+      if (!feed || logIdx >= logEntries.length) return;
+      const [,level,msg] = logEntries[logIdx++];
+      const div = document.createElement('div');
+      div.className = 'log-entry';
+      const now = new Date();
+      div.innerHTML = `<div class="log-ts">${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}</div><div class="log-msg"><span class="lv-${level}">${level.toUpperCase()}</span> ${msg}</div>`;
+      feed.appendChild(div); feed.scrollTop = feed.scrollHeight;
+    }
+    setInterval(appendLog, 5000);
+  </script>
+</body>
+</html>

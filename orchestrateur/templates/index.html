@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BlocManager CTF — Accueil</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Syne:wght@700;800&display=swap');
+    :root {
+      --bg:#080a0d;--surface:#0f1115;--surface2:#161920;--surface3:#1c2028;
+      --border:#21252e;--border-hi:#333844;--text:#d4d8e4;--text-muted:#5a6075;
+      --text-dim:#2e3240;--red:#e63946;--red-dim:#2a0d10;--amber:#f4a261;
+      --amber-dim:#2e1a08;--green:#52b788;--green-dim:#0b2418;--blue:#4cc9f0;
+      --mono:'IBM Plex Mono',monospace;--display:'Syne',sans-serif;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body{
+      background:var(--bg);
+      color:var(--text);
+      font-family:var(--mono);
+      font-size:13px;
+      height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow:hidden;
+    }
+    body::after{
+      content:'';position:fixed;inset:0;
+      background:repeating-linear-gradient(to bottom,transparent 0px,transparent 2px,rgba(0,0,0,0.08) 2px,rgba(0,0,0,0.08) 3px);
+      pointer-events:none;z-index:9999;
+    }
+
+    .welcome-container {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 2.5rem;
+      max-width: 500px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      position: relative;
+    }
+
+    .brand-header {
+      font-family: var(--display);
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: .05em;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+    }
+
+    .blink-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--red);
+      animation: pulse-dot 1.5s ease-in-out infinite;
+    }
+    @keyframes pulse-dot{0%,100%{opacity:1;box-shadow:0 0 10px var(--red);}50%{opacity:.3;box-shadow:none;}}
+
+    .version {
+      font-size: 0.65rem;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      margin-bottom: 2rem;
+    }
+
+    .intro-text {
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-bottom: 2.5rem;
+      font-size: 0.85rem;
+    }
+
+    /* LE BOUTON ROUGE DEMARRER */
+    .start-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      background: var(--red);
+      color: #ffffff;
+      border: 1px solid transparent;
+      padding: 1rem 2rem;
+      font-family: var(--mono);
+      font-size: 0.95rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      border-radius: 4px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s ease-in-out;
+      box-shadow: 0 4px 15px rgba(230, 57, 70, 0.3);
+      width: 100%;
+    }
+
+    .start-btn:hover {
+      background: #f24a57;
+      box-shadow: 0 6px 20px rgba(230, 57, 70, 0.5);
+      transform: translateY(-1px);
+    }
+
+    .start-btn:active {
+      transform: translateY(1px);
+      box-shadow: 0 2px 10px rgba(230, 57, 70, 0.3);
+    }
+
+    .footer-note {
+      margin-top: 2rem;
+      font-size: 0.6rem;
+      color: var(--text-dim);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="welcome-container">
+    <div class="brand-header">
+      <div class="blink-dot"></div>
+      BLOC MGR
+    </div>
+    <div class="version">Environnement de Simulation CTF v3.2.1</div>
+    
+    <p class="intro-text">
+      Un incident critique a été détecté sur l'infrastructure hospitalière. Les systèmes sont actuellement verrouillés par un ransomware. Vous allez être propulsé sur le tableau de bord d'urgence pour mener l'enquête.
+    </p>
+
+    <a href="dashboard.html" class="start-btn">
+      ⚡ DÉMARRER LE CHALLENGE
+    </a>
+
+    <div class="footer-note">
+      Usage pédagogique et sécurisé — Droits d'administration requis.
+    </div>
+  </div>
+
+</body>
+</html>
