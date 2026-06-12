@@ -58,10 +58,10 @@
 (function() {
   const el = document.getElementById('countdown-inline');
   if (!el) return;
-  const KEY = 'ransom_deadline';
+  const KEY = 'ransom_deadline_v2';
   let deadline = localStorage.getItem(KEY);
   if (!deadline) {
-    deadline = Date.now() + 23 * 3600000 + 59 * 60000 + 59000;
+    deadline = Date.now() + 3 * 3600000;
     localStorage.setItem(KEY, deadline);
   } else {
     deadline = parseInt(deadline);

@@ -1,3 +1,5 @@
+
+// Date actuelle
 const dateEl = document.getElementById('current-date');
 if (dateEl) {
   const now = new Date();
@@ -5,6 +7,7 @@ if (dateEl) {
   dateEl.textContent = now.toLocaleDateString('fr-FR', opts);
 }
 
+// Recherche dans le tableau
 const searchInput = document.getElementById('search');
 const filterSalle = document.getElementById('filter-salle');
 const table = document.getElementById('table-resa');
@@ -25,4 +28,3 @@ function filterTable() {
 
 searchInput?.addEventListener('input', filterTable);
 filterSalle?.addEventListener('change', filterTable);
-'@ | Out-File -FilePath "C:\Projet PFE\urgence_au_bloc\challenge\web\static\script_clean.js" -Encoding UTF8

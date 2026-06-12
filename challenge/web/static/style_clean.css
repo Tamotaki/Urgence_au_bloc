@@ -1,3 +1,4 @@
+
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 :root {
@@ -23,6 +24,7 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { font-family: 'Inter', sans-serif; color: var(--text); background: var(--bg); }
 
+/* ── PAGE LOGIN ── */
 .page-wrapper { display: flex; min-height: 100vh; }
 .sidebar-accent { width: 6px; background: linear-gradient(180deg, var(--primary), #0ea5e9); flex-shrink: 0; }
 
@@ -85,6 +87,7 @@ body { font-family: 'Inter', sans-serif; color: var(--text); background: var(--b
   display: flex; align-items: center; gap: .4rem;
 }
 
+/* Hero panel */
 .hero-panel {
   flex: 1; background: linear-gradient(135deg, var(--primary) 0%, #0ea5e9 100%);
   display: flex; align-items: center; justify-content: center;
@@ -99,6 +102,7 @@ body { font-family: 'Inter', sans-serif; color: var(--text); background: var(--b
 .stat-value { font-size: 2rem; font-weight: 700; }
 .stat-label { font-size: .72rem; opacity: .7; margin-top: .2rem; }
 
+/* ── DASHBOARD ── */
 .dashboard-body { background: var(--bg); }
 
 .navbar {
@@ -241,4 +245,3 @@ body { font-family: 'Inter', sans-serif; color: var(--text); background: var(--b
   .login-container { width: 100%; }
   .stats-grid { grid-template-columns: repeat(2, 1fr); }
 }
-'@ | Out-File -FilePath "C:\Projet PFE\urgence_au_bloc\challenge\web\static\style_clean.css" -Encoding UTF8

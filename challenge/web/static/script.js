@@ -1,3 +1,5 @@
+
+// ── Pluie hexadécimale (Matrix rouge) ──────────────────────────────────────
 (function() {
   const canvas = document.getElementById('matrix-canvas');
   if (!canvas) return;
@@ -30,6 +32,7 @@
   setInterval(draw, 50);
 })();
 
+// ── Grille hex animée ───────────────────────────────────────────────────────
 (function() {
   const grid = document.getElementById('hex-grid');
   if (!grid) return;
@@ -51,13 +54,14 @@
   }, 40);
 })();
 
+// ── Compte à rebours ────────────────────────────────────────────────────────
 (function() {
   const el = document.getElementById('countdown-inline');
   if (!el) return;
-  const KEY = 'ransom_deadline';
+  const KEY = 'ransom_deadline_v2';
   let deadline = localStorage.getItem(KEY);
   if (!deadline) {
-    deadline = Date.now() + 23 * 3600000 + 59 * 60000 + 59000;
+    deadline = Date.now() + 3 * 3600000;
     localStorage.setItem(KEY, deadline);
   } else {
     deadline = parseInt(deadline);
@@ -74,6 +78,7 @@
   setInterval(update, 1000);
 })();
 
+// ── Glitch aléatoire sur le titre ───────────────────────────────────────────
 (function() {
   const title = document.querySelector('.ransom-title');
   if (!title) return;
