@@ -8,7 +8,6 @@
 </head>
 <body class="dashboard-body">
 
-  <!-- Navbar -->
   <nav class="navbar">
     <div class="nav-brand">
       <span class="nav-icon">🏥</span>
@@ -28,8 +27,6 @@
   </nav>
 
   <div class="dashboard-layout">
-
-    <!-- Sidebar navigation -->
     <aside class="sidebar">
       <nav class="side-nav">
         <a href="#" class="side-link active">📅 Planning du jour</a>
@@ -45,10 +42,7 @@
       </nav>
     </aside>
 
-    <!-- Contenu principal -->
     <main class="main-content">
-
-      <!-- En-tête -->
       <div class="content-header">
         <div>
           <h1 class="page-title">Planning du jour</h1>
@@ -57,7 +51,6 @@
         <button class="btn-primary">+ Nouvelle réservation</button>
       </div>
 
-      <!-- Cartes de statut -->
       <div class="stats-grid">
         <div class="stat-card">
           <div class="stat-icon green">✅</div>
@@ -89,7 +82,6 @@
         </div>
       </div>
 
-      <!-- Tableau des réservations -->
       <div class="table-card">
         <div class="table-header">
           <h2>Réservations — Blocs opératoires</h2>
@@ -136,10 +128,8 @@
           </table>
         </div>
       </div>
-
     </main>
   </div>
-
   <script src="{{ url_for('static', filename='script_clean.js') }}"></script>
 </body>
 </html>

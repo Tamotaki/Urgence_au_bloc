@@ -3,45 +3,59 @@
 <head>
   <meta charset="UTF-8"/>
   <title>BLOC MANAGER — ACCÈS OBTENU</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style_clean.css') }}"/>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"/>
 </head>
-<body>
-  <canvas id="matrix-canvas"></canvas>
-  <div class="scanline"></div>
-  <div class="container">
-    <div class="hospital-header">
-      <div class="hospital-logo">🏥</div>
-      <div class="hospital-name glitch" data-text="HÔPITAL SAINT-LOUIS — ACCÈS SYSTÈME">
-        HÔPITAL SAINT-LOUIS — ACCÈS SYSTÈME
+<body class="hacked-body">
+  
+  <div class="hacked-dashboard">
+    <!-- Navbar (corrupted look) -->
+    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:1rem; margin-bottom:2rem;">
+      <div style="display:flex; align-items:center; gap:0.5rem;">
+        <span style="font-size:1.5rem;">🏥</span>
+        <h2 style="margin:0; font-size:1.2rem; font-weight:700;">Hôpital Saint-Louis <span style="color:var(--text-muted); font-size:0.8rem; font-weight:400; margin-left:0.5rem;">BLOC MANAGER v3.2.1</span></h2>
+      </div>
+      <div>
+        <span style="color:var(--text-muted); font-size:0.85rem;">Session: <span style="color:#fbbf24;">{{ user }}</span> ({{ role }})</span>
       </div>
     </div>
 
+    <!-- Banner -->
     <div class="access-granted-banner">
-      <div class="ag-title">✅ ACCÈS OBTENU</div>
-      <div class="ag-sub">Connecté en tant que : <span class="highlight">{{ user }}</span>
-        &nbsp;|&nbsp; Rôle : <span class="red">{{ role }}</span></div>
+      <div class="ag-title">✅ SYSTÈME DE SECOURS ACCESSIBLE</div>
+      <div class="ag-sub">Vous avez réussi à pénétrer l'interface d'administration locale.</div>
     </div>
 
-    <div class="ransom-message" style="margin-top:1rem;">
-      <div class="ransom-text">
-        Vous avez réussi à pénétrer le système compromis.<br/>
-        Les données chiffrées sont accessibles depuis ce panneau.<br/>
-        <span class="red">Prochaine étape :</span> restaurer les sauvegardes et patcher la vulnérabilité.
-      </div>
+    <div class="crypto-box" style="border-left-color: #fbbf24;">
+      <p style="color:#fbbf24; font-weight:700; margin-bottom:0.5rem;">⚠️ NOTE DE MAINTENANCE INTERNE DSI :</p>
+      <p style="color:var(--text-muted); font-size:0.85rem; line-height:1.5;">
+        En raison de la compromission du serveur web, les comptes d'administration normaux sont désactivés.<br/>
+        Veuillez utiliser l'accès SSH système de secours pour toute opération de remédiation :<br/><br/>
+        <span style="background:rgba(0,0,0,0.5); padding:0.4rem 0.8rem; border-radius:4px; font-family:'Share Tech Mono', monospace; font-size:0.85rem;">
+          <span style="color:#f8fafc;">Identifiant :</span> operateur &nbsp;|&nbsp; <span style="color:#f8fafc;">Mot de passe :</span> Hopital2024
+        </span>
+      </p>
     </div>
 
-    <div class="divider"><span>[ PANNEAU D'ADMINISTRATION ]</span></div>
+    <div style="margin-bottom:1rem; font-size:0.8rem; color:var(--text-muted); letter-spacing:0.05em; text-transform:uppercase;">
+      DONNÉES DU PLANNING (CHIFFRÉES)
+    </div>
+
     <div class="admin-panel">
-      <div class="admin-card locked">📁 Planning Semaine 47 — <span class="red">CHIFFRÉ</span></div>
-      <div class="admin-card locked">👨‍⚕️ Dossiers Chirurgiens — <span class="red">CHIFFRÉ</span></div>
-      <div class="admin-card locked">🏨 Salles Opératoires — <span class="red">CHIFFRÉ</span></div>
-      <div class="admin-card locked">💉 Stock Matériel — <span class="red">CHIFFRÉ</span></div>
+      <div class="admin-card locked">📁 Planning Semaine 47 — <span style="color:var(--red-alert); font-weight:700;">AES-256</span></div>
+      <div class="admin-card locked">👨‍⚕️ Dossiers Chirurgiens — <span style="color:var(--red-alert); font-weight:700;">AES-256</span></div>
+      <div class="admin-card locked">🏨 Salles Opératoires — <span style="color:var(--red-alert); font-weight:700;">AES-256</span></div>
+      <div class="admin-card locked">💉 Stock Matériel — <span style="color:var(--red-alert); font-weight:700;">AES-256</span></div>
     </div>
 
-    <a href="/logout" class="login-btn" style="display:inline-block;margin-top:2rem;text-decoration:none;">
-      ⏏ SE DÉCONNECTER
-    </a>
+    <div style="margin-top:3rem;">
+      <a href="/logout" class="btn-hacked-login" style="display:inline-block; width:auto; padding:0.6rem 1.5rem; text-decoration:none; background:var(--panel-dark); border:1px solid rgba(255,255,255,0.1); color:var(--text-white);">
+        ⏏ FERMER LA SESSION
+      </a>
+    </div>
+
   </div>
+
   <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>

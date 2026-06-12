@@ -4,79 +4,100 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>BLOC MANAGER — SYSTÈME COMPROMIS</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style_clean.css') }}"/>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"/>
 </head>
-<body>
-  <canvas id="matrix-canvas"></canvas>
-  <div class="scanline"></div>
-  <div class="container">
-    <div class="hospital-header">
-      <div class="hospital-logo">🏥</div>
-      <div class="hospital-name glitch" data-text="HÔPITAL SAINT-LOUIS — BLOC OPÉRATOIRE">
-        HÔPITAL SAINT-LOUIS — BLOC OPÉRATOIRE
-      </div>
-      <div class="system-id">SYSTÈME : BLOCMANAGER v3.2.1 &nbsp;|&nbsp; ID: SL-BO-447</div>
-    </div>
-    <div class="ransom-banner">
-      <div class="warning-icon blink">⚠</div>
-      <div>
-        <div class="ransom-title">RANSOMWARE DÉTECTÉ</div>
-        <div class="ransom-subtitle">VOS FICHIERS ONT ÉTÉ CHIFFRÉS</div>
-      </div>
-      <div class="warning-icon blink">⚠</div>
-    </div>
-    <div class="ransom-message">
-      <div class="ransom-text">
-        <span class="highlight">ATTENTION ADMINISTRATEUR :</span>
-        Tous les plannings opératoires, dossiers patients et accès au
-        <span class="highlight">Gestionnaire de Blocs</span> ont été
-        <span class="red">CHIFFRÉS</span> avec l'algorithme AES-256.<br/><br/>
-        Vous avez <span class="countdown-inline" id="countdown-inline">--:--:--</span>
-        pour vous conformer aux instructions avant suppression définitive des données.
-      </div>
-      <div class="bitcoin-box">
-        <div class="btc-label">💰 RANÇON EXIGÉE : <span class="red">0.85 BTC</span></div>
-        <div class="btc-address">1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2</div>
-        <div class="btc-hint">Paiement à effectuer dans le délai imparti</div>
-      </div>
-    </div>
-    <div class="encrypted-blocs">
-      <div class="bloc-label">📋 DONNÉES DU PLANNING — ÉTAT DU CHIFFREMENT :</div>
-      <div class="hex-grid" id="hex-grid"></div>
-    </div>
-    <div class="divider"><span>[ ACCÈS SYSTÈME D'URGENCE ]</span></div>
-    <div class="login-section">
-      <div class="login-title">🔐 AUTHENTIFICATION ADMINISTRATEUR</div>
-      <div class="login-subtitle">Accès restreint au personnel autorisé</div>
-      {% if error %}
-      <div class="error-box">⛔ {{ error }}</div>
-      {% endif %}
-      <form action="/login" method="POST" class="login-form" autocomplete="off">
-        <div class="form-group">
-          <label for="username">Identifiant</label>
-          <input type="text" id="username" name="username" placeholder="ex: admin" autocomplete="off" spellcheck="false"/>
+<body class="hacked-body">
+  
+  <!-- BACKGROUND APP (Blurred and Corrupted) -->
+  <div class="page-wrapper corrupted-bg">
+    <div class="sidebar-accent" style="background: var(--danger);"></div>
+    <div class="login-container">
+      <div class="brand">
+        <div class="brand-icon">🏥</div>
+        <div class="brand-info">
+          <div class="brand-name">Hôpital Saint-Louis</div>
+          <div class="brand-sub">Gestion des Blocs Opératoires</div>
         </div>
-        <div class="form-group">
-          <label for="password">Mot de passe</label>
-          <input type="password" id="password" name="password" placeholder="••••••••" autocomplete="new-password"/>
+      </div>
+      <div class="login-card">
+        <div class="card-header">
+          <h1>Connexion</h1>
+          <p>Accès réservé au personnel soignant autorisé</p>
         </div>
-        <button type="submit" class="login-btn">ACCÉDER AU SYSTÈME</button>
-      </form>
-      <div class="hint-box">
-        <details>
-          <summary>🛠️ Support technique</summary>
-          <p>Contact DSI : <code>dsi-interne@saint-louis.fr</code></p>
-          <p>Ticket urgence : <code>#INC-2024-8847</code></p>
-        </details>
+        <form class="login-form">
+          <div class="form-group">
+            <label>Identifiant</label>
+            <div class="input-wrapper">
+              <input type="text" disabled/>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Mot de passe</label>
+            <div class="input-wrapper">
+              <input type="password" disabled/>
+            </div>
+          </div>
+          <button type="button" class="btn-login" disabled>Se connecter</button>
+        </form>
       </div>
     </div>
-    <div class="footer">
-      <span class="blink-slow">■</span>
-      SESSION CHIFFRÉE &nbsp;|&nbsp; IP TRACÉE &nbsp;|&nbsp;
-      TOUTE TENTATIVE NON AUTORISÉE EST ENREGISTRÉE
-      <span class="blink-slow">■</span>
+    <div class="hero-panel" style="background: #1e293b;">
+      <div class="hero-content">
+        <div class="hero-icon">⚕️</div>
+        <h2>BlocManager</h2>
+      </div>
     </div>
   </div>
+
+  <!-- RANSOMWARE OVERLAY -->
+  <div class="ransomware-overlay">
+    <div class="ransom-modal">
+      <div class="ransom-header">
+        <div class="danger-icon">⚠</div>
+        <h2>SYSTÈME VERROUILLÉ</h2>
+      </div>
+      
+      <div class="ransom-body">
+        <p class="critical-text">ATTENTION: VOS DONNÉES ONT ÉTÉ CHIFFRÉES (AES-256)</p>
+        <p class="desc-text">
+          Le réseau de l'Hôpital Saint-Louis a été compromis. Les dossiers patients, les plannings opératoires et les accès administrateurs sont désormais inaccessibles.
+        </p>
+
+        <div class="timer-box">
+          <p>TEMPS RESTANT AVANT SUPPRESSION :</p>
+          <div class="countdown-inline" id="countdown-inline">--:--:--</div>
+        </div>
+
+        <div class="crypto-box">
+          <div class="btc-amount">Paiement requis : <span>0.85 BTC</span></div>
+          <div class="btc-address">Adresse : 1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2</div>
+        </div>
+      </div>
+
+      <!-- Emergency Login Bypass -->
+      <div class="emergency-login">
+        <h3>ACCÈS ADMINISTRATEUR DE SECOURS</h3>
+        {% if error %}
+        <div class="alert alert-error">⛔ {{ error }}</div>
+        {% endif %}
+        <form action="/login" method="POST" autocomplete="off">
+          <div class="form-group-hacked">
+            <input type="text" id="username" name="username" placeholder="Identifiant (ex: admin)" autocomplete="off" spellcheck="false"/>
+          </div>
+          <div class="form-group-hacked">
+            <input type="password" id="password" name="password" placeholder="Mot de passe" autocomplete="new-password"/>
+          </div>
+          <button type="submit" class="btn-hacked-login">TENTER L'ACCÈS</button>
+        </form>
+      </div>
+      
+      <div class="ransom-footer">
+        <p>ID d'infection : SL-BO-447 | Toute tentative de restauration corrompra les fichiers.</p>
+      </div>
+    </div>
+  </div>
+
   <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>

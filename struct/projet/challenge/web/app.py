@@ -44,7 +44,7 @@ def init_db():
     con.commit()
     con.close()
 
-# ─── ROUTES RANSOMWARE (page piratée) ────────────────────────────────────────
+# ROUTES RANSOMWARE (page piratée)
 @app.route("/", methods=["GET"])
 def index():
     return render_template("index.html")
@@ -79,7 +79,7 @@ def dashboard_hacked():
         return redirect(url_for("index"))
     return render_template("dashboard.html", user=session.get("user"), role=session.get("role"))
 
-# ─── ROUTES VERSION RESTAURÉE (page saine) ───────────────────────────────────
+# ROUTES VERSION RESTAURÉE (page saine)
 @app.route("/secure", methods=["GET"])
 def index_clean():
     return render_template("index_clean.html")
@@ -91,7 +91,7 @@ def login_clean():
     error = None
     con = sqlite3.connect(DB_PATH)
     cur = con.cursor()
-    # ✅ REQUETE PARAMETREE — protection contre SQLi
+    # ✅ REQUETE PARAMETREE : protection contre SQLi
     cur.execute("SELECT * FROM users WHERE username=? AND password=?", (username, password))
     user = cur.fetchone()
     con.close()
@@ -122,6 +122,13 @@ def dashboard_clean():
 def logout():
     session.clear()
     return redirect(url_for("index"))
+
+@app.route("/healthz")
+def healthz():
+    resp = app.make_response("ok")
+    resp.headers["Access-Control-Allow-Origin"] = "*"
+    return resp
+
 
 if __name__ == "__main__":
     init_db()
