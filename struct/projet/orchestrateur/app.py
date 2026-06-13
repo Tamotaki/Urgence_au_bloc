@@ -3,18 +3,17 @@ import os
 import threading
 import time
 import docker
-from flask import Flask, jsonify, request, redirect, abort, render_template
+import requests as req
+from flask import Flask, jsonify, request, redirect, abort, render_template, Response, stream_with_context
 
 app = Flask(__name__)
 
-# Active player sessions: { sid: { container_id, port, started_at } }
 sessions = {}
 PORT_MIN  = 8100
 PORT_MAX  = 8200
 IMAGE     = os.environ.get("CHALLENGE_IMAGE", "urgence-au-bloc-challenge:latest")
-TTL       = int(os.environ.get("CHALLENGE_TTL", 10800))  # default 3 hours
+TTL       = int(os.environ.get("CHALLENGE_TTL", 10800))
 
-# Initialize Docker client
 try:
     docker_client = docker.from_env()
 except Exception as ex:
@@ -24,7 +23,6 @@ except Exception as ex:
 
 def next_port():
     used = {s["port"] for s in sessions.values()}
-    # Also check actual running containers on the host
     if docker_client:
         try:
             for c in docker_client.containers.list(all=True):
@@ -35,7 +33,6 @@ def next_port():
                                 used.add(int(binding["HostPort"]))
         except Exception as ex:
             print(f"Warning: Could not list container ports: {ex}")
-            
     for p in range(PORT_MIN, PORT_MAX + 1):
         if p not in used:
             return p
@@ -48,7 +45,7 @@ def kill(sid):
         try:
             container = docker_client.containers.get(s["container_id"])
             container.remove(force=True)
-            print(f"[+] Container {s['container_id'][:12]} for session {sid} has been killed.")
+            print(f"[+] Container {s['container_id'][:12]} for session {sid} killed.")
         except Exception as e:
             print(f"[-] Error removing container {s['container_id']}: {e}")
 
@@ -63,29 +60,21 @@ def cleanup():
                 kill(sid)
 
 
-# Routes
-
-# Page d'accueil : affiche la page immersive
 @app.route("/")
 def index():
     return render_template("index.html")
 
 
-# Lance un conteneur challenge et redirige le joueur vers sa session
 @app.route("/play")
 def play():
     if not docker_client:
         abort(500, "Le démon Docker n'est pas disponible sur le serveur.")
-
     port = next_port()
     if not port:
         abort(503, "Serveur plein, réessayez dans quelques minutes.")
-
     sid = str(uuid.uuid4())
     container_name = f"challenge_{sid[:8]}"
-
     try:
-        # Launch container with port mapping and default bridge network
         container = docker_client.containers.run(
             IMAGE,
             name=container_name,
@@ -98,22 +87,46 @@ def play():
     except Exception as e:
         print(f"[-] Docker run error: {e}")
         abort(500, f"Erreur de démarrage Docker : {e}")
-
     sessions[sid] = {"container_id": container_id, "port": port, "started_at": time.time()}
     return redirect(f"/game/{sid}")
 
 
-# Affiche le portail d'investigation avec les deux onglets (BlocManager + Terminal)
 @app.route("/game/<sid>")
 def game(sid):
     if sid not in sessions:
         abort(404, "Session introuvable ou expirée.")
-    host = request.host.split(":")[0]
-    port = sessions[sid]['port']
-    return render_template("game.html", sid=sid, host=host, port=port)
+    return render_template("game.html", sid=sid)
 
 
-# Retourne le temps restant de la session (JSON) : utilisé par le frontend
+@app.route("/proxy/<sid>/", defaults={"path": ""})
+@app.route("/proxy/<sid>/<path:path>")
+def proxy(sid, path):
+    if sid not in sessions:
+        abort(404)
+    port = sessions[sid]["port"]
+    url = f"http://127.0.0.1:{port}/{path}"
+    if request.query_string:
+        url += "?" + request.query_string.decode()
+    try:
+        resp = req.request(
+            method=request.method,
+            url=url,
+            headers={k: v for k, v in request.headers if k.lower() != "host"},
+            data=request.get_data(),
+            cookies=request.cookies,
+            allow_redirects=False,
+            stream=True,
+            timeout=10
+        )
+        headers = [(k, v) for k, v in resp.headers.items()
+                   if k.lower() not in ("transfer-encoding", "content-encoding", "content-length")]
+        return Response(stream_with_context(resp.iter_content(chunk_size=4096)),
+                        status=resp.status_code,
+                        headers=headers)
+    except Exception as e:
+        abort(502, f"Proxy error: {e}")
+
+
 @app.route("/api/status/<sid>")
 def status(sid):
     if sid not in sessions:
@@ -128,7 +141,6 @@ def status(sid):
     })
 
 
-# Arrête une session et supprime le conteneur associé
 @app.route("/api/stop/<sid>", methods=["POST"])
 def stop(sid):
     if sid not in sessions:
@@ -137,29 +149,21 @@ def stop(sid):
     return jsonify({"ok": True})
 
 
-# Liste toutes les sessions actives pour débugger
 @app.route("/api/sessions")
 def list_sessions():
     now = time.time()
     return jsonify([
-        {
-            "sid": sid,
-            "port": s["port"],
-            "remaining": max(0, TTL - int(now - s["started_at"]))
-        }
+        {"sid": sid, "port": s["port"], "remaining": max(0, TTL - int(now - s["started_at"]))}
         for sid, s in sessions.items()
     ])
 
 
-# Vérifie que le serveur tourne pour Docker/Nginx
 @app.route("/healthz")
 def healthz():
     return jsonify({"status": "ok", "sessions": len(sessions)})
 
 
-# Démarrage
 if __name__ == "__main__":
-    # Clean up leftover challenge containers on start
     if docker_client:
         try:
             print("[*] Cleaning up leftover containers on startup...")
@@ -169,6 +173,5 @@ if __name__ == "__main__":
                     c.remove(force=True)
         except Exception as e:
             print(f"Error cleaning up old containers: {e}")
-
     threading.Thread(target=cleanup, daemon=True).start()
     app.run(host="0.0.0.0", port=5000, debug=False)

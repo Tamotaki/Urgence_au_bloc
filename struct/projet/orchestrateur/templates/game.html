@@ -615,10 +615,8 @@
 
   <script>
     const sid = "{{ sid }}";
-    const host = "{{ host }}";
-    const port = "{{ port }}";
-    const targetUrl = `http://${host}:${port}/`;
-    const terminalUrl = `http://${host}:${port}/terminal/`;
+    const targetUrl = `/proxy/${sid}/`;
+    const terminalUrl = `/proxy/${sid}/terminal/`;
 
     // Wait until the container's healthcheck endpoint is live
     function checkSandboxReady() {
