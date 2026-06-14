@@ -20,6 +20,20 @@ except Exception as ex:
     print(f"Warning: Could not connect to Docker daemon: {ex}")
     docker_client = None
 
+# Detect network if running inside a Docker container
+orchestrator_network = None
+if docker_client:
+    try:
+        import socket
+        container_id = socket.gethostname()
+        self_container = docker_client.containers.get(container_id)
+        networks = self_container.attrs.get('NetworkSettings', {}).get('Networks', {})
+        if networks:
+            orchestrator_network = list(networks.keys())[0]
+            print(f"[+] Orchestrator is running inside a container. Network: {orchestrator_network}")
+    except Exception as e:
+        print(f"[*] Orchestrator is running on host (not in a container): {e}")
+
 
 def next_port():
     used = {s["port"] for s in sessions.values()}
@@ -75,19 +89,45 @@ def play():
     sid = str(uuid.uuid4())
     container_name = f"challenge_{sid[:8]}"
     try:
-        container = docker_client.containers.run(
-            IMAGE,
-            name=container_name,
-            detach=True,
-            ports={'80/tcp': port},
-            restart_policy={"Name": "unless-stopped"}
-        )
+        run_kwargs = {
+            "name": container_name,
+            "detach": True,
+            "restart_policy": {"Name": "unless-stopped"}
+        }
+        # If we are in a docker network, run on the same network
+        if orchestrator_network:
+            run_kwargs["network"] = orchestrator_network
+        else:
+            # Otherwise map port to host
+            run_kwargs["ports"] = {'80/tcp': port}
+
+        container = docker_client.containers.run(IMAGE, **run_kwargs)
         container_id = container.id
-        print(f"[+] Started container {container_name} on port {port} (ID: {container_id[:12]})")
+        print(f"[+] Started container {container_name} (ID: {container_id[:12]})")
+
+        # Get container IP address if running on network
+        container.reload()
+        ip_address = None
+        if orchestrator_network:
+            for _ in range(5):
+                networks = container.attrs.get('NetworkSettings', {}).get('Networks', {})
+                if orchestrator_network in networks:
+                    ip_address = networks[orchestrator_network].get('IPAddress')
+                    if ip_address:
+                        break
+                time.sleep(0.1)
+                container.reload()
+            print(f"[+] Container {container_name} IP: {ip_address}")
+
     except Exception as e:
         print(f"[-] Docker run error: {e}")
         abort(500, f"Erreur de démarrage Docker : {e}")
-    sessions[sid] = {"container_id": container_id, "port": port, "started_at": time.time()}
+    sessions[sid] = {
+        "container_id": container_id,
+        "port": port,
+        "ip": ip_address,
+        "started_at": time.time()
+    }
     return redirect(f"/game/{sid}")
 
 
@@ -104,7 +144,11 @@ def proxy(sid, path):
     if sid not in sessions:
         abort(404)
     port = sessions[sid]["port"]
-    url = f"http://127.0.0.1:{port}/{path}"
+    ip = sessions[sid].get("ip")
+    if ip:
+        url = f"http://{ip}/{path}"
+    else:
+        url = f"http://127.0.0.1:{port}/{path}"
     if request.query_string:
         url += "?" + request.query_string.decode()
     try:
