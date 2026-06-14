@@ -6,7 +6,7 @@ import docker
 import requests as req
 from flask import Flask, jsonify, request, redirect, abort, render_template, Response, stream_with_context, make_response
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder=None)
 
 sessions = {}
 PORT_MIN  = 8100
@@ -140,8 +140,8 @@ def game(sid):
     return resp
 
 
-@app.route("/proxy/<sid>/", defaults={"path": ""})
-@app.route("/proxy/<sid>/<path:path>")
+@app.route("/proxy/<sid>/", defaults={"path": ""}, methods=["GET", "POST", "PUT", "DELETE", "PATCH"])
+@app.route("/proxy/<sid>/<path:path>", methods=["GET", "POST", "PUT", "DELETE", "PATCH"])
 def proxy(sid, path):
     if sid not in sessions:
         abort(404)
@@ -164,8 +164,35 @@ def proxy(sid, path):
             stream=True,
             timeout=10
         )
-        headers = [(k, v) for k, v in resp.headers.items()
-                   if k.lower() not in ("transfer-encoding", "content-encoding", "content-length")]
+        
+        # Build headers and rewrite Location for redirects
+        headers = []
+        for k, v in resp.headers.items():
+            k_low = k.lower()
+            if k_low in ("transfer-encoding", "content-encoding", "content-length"):
+                continue
+            if k_low == "location":
+                if v.startswith("/"):
+                    v = f"/proxy/{sid}{v}"
+                elif v.startswith(f"http://127.0.0.1:{port}/"):
+                    v = v.replace(f"http://127.0.0.1:{port}/", f"/proxy/{sid}/")
+                elif ip and v.startswith(f"http://{ip}/"):
+                    v = v.replace(f"http://{ip}/", f"/proxy/{sid}/")
+            headers.append((k, v))
+            
+        content_type = resp.headers.get("Content-Type", "")
+        if "text/html" in content_type:
+            # Read full content to perform HTML substitutions
+            content = resp.content.decode("utf-8", errors="ignore")
+            content = content.replace('"/static/', f'"/proxy/{sid}/static/')
+            content = content.replace("'/static/", f"'/proxy/{sid}/static/")
+            content = content.replace('action="/', f'action="/proxy/{sid}/')
+            content = content.replace("action='/", f"action='/proxy/{sid}/")
+            
+            flask_resp = Response(content, status=resp.status_code, headers=headers)
+            flask_resp.set_cookie("current_sid", sid, path="/")
+            return flask_resp
+            
         flask_resp = Response(stream_with_context(resp.iter_content(chunk_size=4096)),
                               status=resp.status_code,
                               headers=headers)
@@ -204,8 +231,30 @@ def catch_all(path):
             stream=True,
             timeout=10
         )
-        headers = [(k, v) for k, v in resp.headers.items()
-                   if k.lower() not in ("transfer-encoding", "content-encoding", "content-length")]
+        
+        headers = []
+        for k, v in resp.headers.items():
+            k_low = k.lower()
+            if k_low in ("transfer-encoding", "content-encoding", "content-length"):
+                continue
+            if k_low == "location":
+                if v.startswith("/"):
+                    v = f"/proxy/{sid}{v}"
+                elif v.startswith(f"http://127.0.0.1:{port}/"):
+                    v = v.replace(f"http://127.0.0.1:{port}/", f"/proxy/{sid}/")
+                elif ip and v.startswith(f"http://{ip}/"):
+                    v = v.replace(f"http://{ip}/", f"/proxy/{sid}/")
+            headers.append((k, v))
+            
+        content_type = resp.headers.get("Content-Type", "")
+        if "text/html" in content_type:
+            content = resp.content.decode("utf-8", errors="ignore")
+            content = content.replace('"/static/', f'"/proxy/{sid}/static/')
+            content = content.replace("'/static/", f"'/proxy/{sid}/static/")
+            content = content.replace('action="/', f'action="/proxy/{sid}/')
+            content = content.replace("action='/", f"action='/proxy/{sid}/")
+            return Response(content, status=resp.status_code, headers=headers)
+            
         return Response(stream_with_context(resp.iter_content(chunk_size=4096)),
                         status=resp.status_code,
                         headers=headers)
