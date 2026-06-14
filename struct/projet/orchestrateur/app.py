@@ -309,4 +309,4 @@ if __name__ == "__main__":
         except Exception as e:
             print(f"Error cleaning up old containers: {e}")
     threading.Thread(target=cleanup, daemon=True).start()
-    app.run(host="0.0.0.0", port=5000, debug=False)
+    app.run(host="127.0.0.1", port=5001, debug=False)
