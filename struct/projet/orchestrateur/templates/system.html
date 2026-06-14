@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>BlocManager CTF — Système</title>
+  <title>BlocManager CTF - Système</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Syne:wght@700;800&display=swap');
     :root {
@@ -134,11 +134,11 @@
         <div class="pane-title">État du système</div>
         <div class="pane-subtitle">Vue en temps réel des fichiers chiffrés et de l'état des services.</div>
         <div class="alert info">
-          <strong>[INFO]</strong> Chiffrement AES-256 actif sur /data/ — Clé hors d'atteinte.
+          <strong>[INFO]</strong> Chiffrement AES-256 actif sur /data/ - Clé hors d'atteinte.
           Le fichier <code>/tmp/backup.xor</code> utilise un chiffrement XOR récupérable.
           Retrouve la clé dans les <a href="logs.html" style="color:var(--blue)">logs Apache</a>.
         </div>
-        <div style="margin-bottom:.5rem;font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted);">Aperçu hex — backup.xor</div>
+        <div style="margin-bottom:.5rem;font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted);">Aperçu hex - backup.xor</div>
         <div class="hex-display" id="hex-grid"></div>
         <div class="term-block">
           <div class="term-bar"><div class="d r"></div><div class="d y"></div><div class="d g"></div><span class="fn">find /tmp -type f</span></div>
@@ -167,7 +167,7 @@
         <div class="log-entry"><div class="log-ts">now</div><div class="log-msg"><span class="lv-ok">OK</span> System view loaded</div></div>
       </div>
       <div class="hint-section">
-        <button class="hint-toggle" onclick="toggleHint('h1')">💡 Indice — backup.xor <span id="h1-arrow">▼</span></button>
+        <button class="hint-toggle" onclick="toggleHint('h1')">💡 Indice - backup.xor <span id="h1-arrow">▼</span></button>
         <div class="hint-body" id="h1">
           <div class="h-tip">Le fichier XOR est chiffrable avec une clé simple.</div>
           <div class="h-tip">La clé se trouve dans les <a href="logs.html" style="color:var(--amber)">logs Apache</a>.</div>
@@ -185,7 +185,7 @@
     <div class="bb-item"><div class="bb-dot" style="background:var(--red)"></div><span>Ransomware actif</span></div>
     <div class="bb-item"><div class="bb-dot" style="background:var(--green)"></div><span>Session ouverte</span></div>
     <div class="bb-item"><div class="bb-dot" style="background:var(--amber)"></div><span>SQLi exploitée</span></div>
-    <span style="margin-left:auto">BlocManager CTF v3.2.1 — Usage pédagogique</span>
+    <span style="margin-left:auto">BlocManager CTF v3.2.1 - Usage pédagogique</span>
   </div>
 
   <script>

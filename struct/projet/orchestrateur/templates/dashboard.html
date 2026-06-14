@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>BlocManager CTF — Tableau de bord</title>
+  <title>BlocManager CTF - Tableau de bord</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Syne:wght@700;800&display=swap');
     :root {
@@ -153,9 +153,9 @@
     <!-- CENTER -->
     <div class="center-panel">
       <div class="pane-content">
-        <div class="pane-title">Tableau de bord — Incident actif</div>
+        <div class="pane-title">Tableau de bord - Incident actif</div>
         <div class="pane-subtitle">Système compromis. Accès obtenu via injection SQL sur la page de login. Navigue entre les onglets pour explorer le système et progresser dans le challenge.</div>
-        <div class="alert danger"><strong>[CRITICAL]</strong> Ransomware actif — 4 bases de données chiffrées — 0.85 BTC exigés</div>
+        <div class="alert danger"><strong>[CRITICAL]</strong> Ransomware actif - 4 bases de données chiffrées - 0.85 BTC exigés</div>
         <div class="data-grid">
           <div class="data-cell"><div class="dc-label">Planning semaine 47</div><div class="dc-val enc">CHIFFRÉ</div></div>
           <div class="data-cell"><div class="dc-label">Dossiers chirurgiens</div><div class="dc-val enc">CHIFFRÉ</div></div>
@@ -169,12 +169,12 @@
           <div class="term-bar"><div class="d r"></div><div class="d y"></div><div class="d g"></div><span class="fn">incident_summary.txt</span></div>
           <div class="term-body">
             <div><span class="t-red">[ATTACK TIMELINE]</span></div>
-            <div><span class="t-out">03:38</span> — Port scan détecté depuis 185.220.101.x</div>
-            <div><span class="t-out">03:41</span> — <span class="t-amber">Tentatives sur /login (SQLi)</span></div>
-            <div><span class="t-out">03:42</span> — <span class="t-red">Authentification contournée</span></div>
-            <div><span class="t-out">03:44</span> — Ransomware déployé sur /data/</div>
-            <div><span class="t-out">03:47</span> — <span class="t-amber">Fichier backup.xor créé dans /tmp/</span></div>
-            <div><span class="t-out">03:49</span> — Clé XOR encodée dans User-Agent HTTP</div>
+            <div><span class="t-out">03:38</span> - Port scan détecté depuis 185.220.101.x</div>
+            <div><span class="t-out">03:41</span> - <span class="t-amber">Tentatives sur /login (SQLi)</span></div>
+            <div><span class="t-out">03:42</span> - <span class="t-red">Authentification contournée</span></div>
+            <div><span class="t-out">03:44</span> - Ransomware déployé sur /data/</div>
+            <div><span class="t-out">03:47</span> - <span class="t-amber">Fichier backup.xor créé dans /tmp/</span></div>
+            <div><span class="t-out">03:49</span> - Clé XOR encodée dans User-Agent HTTP</div>
             <div>&nbsp;</div>
             <div><span class="t-green">→ Examine les <a href="logs.html" style="color:var(--green)">logs Apache</a> pour retrouver la clé.</span></div>
           </div>
@@ -190,16 +190,16 @@
         <div class="log-entry"><div class="log-ts">03:44</div><div class="log-msg"><span class="lv-warn">WARN</span> Encryption started /data/</div></div>
         <div class="log-entry"><div class="log-ts">03:47</div><div class="log-msg"><span class="lv-warn">WARN</span> backup.xor created in /tmp</div></div>
         <div class="log-entry"><div class="log-ts">03:49</div><div class="log-msg"><span class="lv-info">INFO</span> XOR key embedded in UA</div></div>
-        <div class="log-entry"><div class="log-ts">now</div><div class="log-msg"><span class="lv-ok">OK</span> Session active — user connected</div></div>
+        <div class="log-entry"><div class="log-ts">now</div><div class="log-msg"><span class="lv-ok">OK</span> Session active - user connected</div></div>
       </div>
       <div class="hint-section">
-        <button class="hint-toggle" onclick="toggleHint('h1')">💡 Indice — Étape 2 <span id="h1-arrow">▼</span></button>
+        <button class="hint-toggle" onclick="toggleHint('h1')">💡 Indice - Étape 2 <span id="h1-arrow">▼</span></button>
         <div class="hint-body" id="h1">
           <div class="h-tip">Pense aux injections booléennes.</div>
           <div class="h-tip">Essaie : <code>' OR '1'='1</code></div>
           <div class="h-tip">Ou : <code>admin'--</code> dans le champ utilisateur</div>
         </div>
-        <button class="hint-toggle" onclick="toggleHint('h2')">💡 Indice — Déchiffrement <span id="h2-arrow">▼</span></button>
+        <button class="hint-toggle" onclick="toggleHint('h2')">💡 Indice - Déchiffrement <span id="h2-arrow">▼</span></button>
         <div class="hint-body" id="h2">
           <div class="h-tip">La clé XOR est dans les <a href="logs.html" style="color:var(--amber)">logs Apache</a>.</div>
           <div class="h-tip">Cherche un User-Agent inhabituel à 03:47.</div>
@@ -218,7 +218,7 @@
     <div class="bb-item"><div class="bb-dot" style="background:var(--red)"></div><span>Ransomware actif</span></div>
     <div class="bb-item"><div class="bb-dot" style="background:var(--green)"></div><span>Session ouverte</span></div>
     <div class="bb-item"><div class="bb-dot" style="background:var(--amber)"></div><span>SQLi exploitée</span></div>
-    <span style="margin-left:auto">BlocManager CTF v3.2.1 — Usage pédagogique</span>
+    <span style="margin-left:auto">BlocManager CTF v3.2.1 - Usage pédagogique</span>
   </div>
 
   <script>
@@ -248,7 +248,7 @@
     }
 
     const logEntries = [
-      ['now','info','GET /dashboard — 200'],
+      ['now','info','GET /dashboard - 200'],
       ['now','warn','File /tmp/backup.xor accessed'],
       ['now','info','Session keepalive sent'],
       ['now','ok','Hint system loaded'],

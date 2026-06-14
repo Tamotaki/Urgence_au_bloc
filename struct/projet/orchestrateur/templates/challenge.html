@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>BlocManager CTF — Challenge</title>
+  <title>BlocManager CTF - Challenge</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Syne:wght@700;800&display=swap');
     :root {
@@ -150,12 +150,12 @@
 
     <div class="center-panel">
       <div class="pane-content">
-        <div class="pane-title">Challenge — Étapes</div>
+        <div class="pane-title">Challenge - Étapes</div>
         <div class="pane-subtitle">Complète chaque étape dans l'ordre. Les indices sont dans les logs et le terminal.</div>
 
         <div class="challenge-card">
           <div class="cc-head">
-            <div class="cc-title">Étape 1 — Reconnaissance</div>
+            <div class="cc-title">Étape 1 - Reconnaissance</div>
             <div class="cc-tags"><span class="cc-tag osint">OSINT</span><span class="cc-tag done">✓ complété</span></div>
           </div>
           <div class="cc-body">
@@ -166,7 +166,7 @@
 
         <div class="challenge-card">
           <div class="cc-head">
-            <div class="cc-title">Étape 2 — Injection SQL</div>
+            <div class="cc-title">Étape 2 - Injection SQL</div>
             <div class="cc-tags"><span class="cc-tag sqli">SQLi</span><span class="cc-tag active-b">EN COURS</span></div>
           </div>
           <div class="cc-body">
@@ -178,7 +178,7 @@
 
         <div class="challenge-card">
           <div class="cc-head">
-            <div class="cc-title">Étape 3 — Déchiffrement XOR</div>
+            <div class="cc-title">Étape 3 - Déchiffrement XOR</div>
             <div class="cc-tags"><span class="cc-tag crypto">CRYPTO</span><span class="cc-tag locked">🔒 verrou.</span></div>
           </div>
           <div class="cc-body">
@@ -190,7 +190,7 @@
 
         <div class="challenge-card">
           <div class="cc-head">
-            <div class="cc-title">Étape 4 — Flag final</div>
+            <div class="cc-title">Étape 4 - Flag final</div>
             <div class="cc-tags"><span class="cc-tag osint">SYNTHÈSE</span><span class="cc-tag locked">🔒 verrou.</span></div>
           </div>
           <div class="cc-body">
@@ -219,12 +219,12 @@
         <div class="log-entry"><div class="log-ts">now</div><div class="log-msg"><span class="lv-ok">OK</span> Challenge page loaded</div></div>
       </div>
       <div class="hint-section">
-        <button class="hint-toggle" onclick="toggleHint('h1')">💡 Indice — Étape 2 <span id="h1-arrow">▼</span></button>
+        <button class="hint-toggle" onclick="toggleHint('h1')">💡 Indice - Étape 2 <span id="h1-arrow">▼</span></button>
         <div class="hint-body" id="h1">
           <div class="h-tip">Essaie : <code>' OR '1'='1</code></div>
           <div class="h-tip">Ou : <code>admin'--</code> dans le champ utilisateur</div>
         </div>
-        <button class="hint-toggle" onclick="toggleHint('h2')">💡 Indice — XOR <span id="h2-arrow">▼</span></button>
+        <button class="hint-toggle" onclick="toggleHint('h2')">💡 Indice - XOR <span id="h2-arrow">▼</span></button>
         <div class="hint-body" id="h2">
           <div class="h-tip">La clé est dans les <a href="logs.html" style="color:var(--amber)">logs Apache</a>.</div>
           <div class="h-tip">Script : <code>python3 /tmp/decrypt.py S3cr3tK3y!</code></div>
@@ -242,7 +242,7 @@
     <div class="bb-item"><div class="bb-dot" style="background:var(--red)"></div><span>Ransomware actif</span></div>
     <div class="bb-item"><div class="bb-dot" style="background:var(--green)"></div><span>Session ouverte</span></div>
     <div class="bb-item"><div class="bb-dot" style="background:var(--amber)"></div><span>SQLi exploitée</span></div>
-    <span style="margin-left:auto">BlocManager CTF v3.2.1 — Usage pédagogique</span>
+    <span style="margin-left:auto">BlocManager CTF v3.2.1 - Usage pédagogique</span>
   </div>
 
   <div class="success-overlay" id="success-overlay">
@@ -301,7 +301,7 @@
     }
     document.getElementById('flag-input').addEventListener('keydown', e => { if (e.key === 'Enter') checkFlag(); });
 
-    const logEntries = [['now','info','Challenge steps loaded'],['now','warn','Step 2 in progress — SQLi'],];
+    const logEntries = [['now','info','Challenge steps loaded'],['now','warn','Step 2 in progress - SQLi'],];
     let logIdx = 0;
     function appendLog() {
       const feed = document.getElementById('live-log');

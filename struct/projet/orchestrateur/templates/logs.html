@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>BlocManager CTF — Logs Apache</title>
+  <title>BlocManager CTF - Logs Apache</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Syne:wght@700;800&display=swap');
     :root {
@@ -137,7 +137,7 @@
 
     <div class="center-panel">
       <div class="pane-content">
-        <div class="pane-title">Logs Apache — access.log</div>
+        <div class="pane-title">Logs Apache - access.log</div>
         <div class="pane-subtitle">Analyse les requêtes HTTP. Un User-Agent inhabituel cache la clé XOR. Clique sur la valeur surlignée pour la copier.</div>
         <div class="alert warning">
           <strong>[OBJECTIF]</strong> Retrouve la clé XOR cachée dans un User-Agent suspect vers 03:47.
@@ -164,7 +164,7 @@
           </div>
         </div>
         <div class="alert success" id="key-alert" style="display:none;">
-          <strong>[INDICE DÉBLOQUÉ]</strong> Clé XOR récupérée : <code style="color:var(--green)">S3cr3tK3y!</code> — Lance <code>python3 /tmp/decrypt.py S3cr3tK3y!</code><br/>
+          <strong>[INDICE DÉBLOQUÉ]</strong> Clé XOR récupérée : <code style="color:var(--green)">S3cr3tK3y!</code> - Lance <code>python3 /tmp/decrypt.py S3cr3tK3y!</code><br/>
           Maintenant <a href="challenge.html" style="color:var(--green)">soumets le flag final →</a>
         </div>
       </div>
@@ -203,7 +203,7 @@
     <div class="bb-item"><div class="bb-dot" style="background:var(--red)"></div><span>Ransomware actif</span></div>
     <div class="bb-item"><div class="bb-dot" style="background:var(--green)"></div><span>Session ouverte</span></div>
     <div class="bb-item"><div class="bb-dot" style="background:var(--amber)"></div><span>SQLi exploitée</span></div>
-    <span style="margin-left:auto">BlocManager CTF v3.2.1 — Usage pédagogique</span>
+    <span style="margin-left:auto">BlocManager CTF v3.2.1 - Usage pédagogique</span>
   </div>
 
   <div class="toast" id="toast">✓ Clé copiée : S3cr3tK3y!</div>
@@ -246,7 +246,7 @@
       const div = document.createElement('div');
       div.className = 'log-entry';
       const now = new Date();
-      div.innerHTML = `<div class="log-ts">${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}</div><div class="log-msg"><span class="lv-ok">OK</span> XOR key copied — S3cr3tK3y!</div>`;
+      div.innerHTML = `<div class="log-ts">${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}</div><div class="log-msg"><span class="lv-ok">OK</span> XOR key copied - S3cr3tK3y!</div>`;
       feed.appendChild(div); feed.scrollTop = feed.scrollHeight;
     }
 

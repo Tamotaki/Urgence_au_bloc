@@ -1,5 +1,5 @@
 ╔══════════════════════════════════════════════════╗
-║       HÔPITAL SAINT-LOUIS — SERVEUR INTERNE      ║
+║       HÔPITAL SAINT-LOUIS - SERVEUR INTERNE      ║
 ║              Accès restreint                     ║
 ╚══════════════════════════════════════════════════╝
 
