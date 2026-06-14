@@ -4,7 +4,7 @@ import threading
 import time
 import docker
 import requests as req
-from flask import Flask, jsonify, request, redirect, abort, render_template, Response, stream_with_context
+from flask import Flask, jsonify, request, redirect, abort, render_template, Response, stream_with_context, make_response
 
 app = Flask(__name__)
 
@@ -135,13 +135,50 @@ def play():
 def game(sid):
     if sid not in sessions:
         abort(404, "Session introuvable ou expirée.")
-    return render_template("game.html", sid=sid)
+    resp = make_response(render_template("game.html", sid=sid))
+    resp.set_cookie("current_sid", sid, path="/")
+    return resp
 
 
 @app.route("/proxy/<sid>/", defaults={"path": ""})
 @app.route("/proxy/<sid>/<path:path>")
 def proxy(sid, path):
     if sid not in sessions:
+        abort(404)
+    port = sessions[sid]["port"]
+    ip = sessions[sid].get("ip")
+    if ip:
+        url = f"http://{ip}/{path}"
+    else:
+        url = f"http://127.0.0.1:{port}/{path}"
+    if request.query_string:
+        url += "?" + request.query_string.decode()
+    try:
+        resp = req.request(
+            method=request.method,
+            url=url,
+            headers={k: v for k, v in request.headers if k.lower() != "host"},
+            data=request.get_data(),
+            cookies=request.cookies,
+            allow_redirects=False,
+            stream=True,
+            timeout=10
+        )
+        headers = [(k, v) for k, v in resp.headers.items()
+                   if k.lower() not in ("transfer-encoding", "content-encoding", "content-length")]
+        flask_resp = Response(stream_with_context(resp.iter_content(chunk_size=4096)),
+                              status=resp.status_code,
+                              headers=headers)
+        flask_resp.set_cookie("current_sid", sid, path="/")
+        return flask_resp
+    except Exception as e:
+        abort(502, f"Proxy error: {e}")
+
+
+@app.route("/<path:path>", methods=["GET", "POST", "PUT", "DELETE", "PATCH"])
+def catch_all(path):
+    sid = request.cookies.get("current_sid")
+    if not sid or sid not in sessions:
         abort(404)
     port = sessions[sid]["port"]
     ip = sessions[sid].get("ip")
