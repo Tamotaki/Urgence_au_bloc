@@ -175,6 +175,11 @@ def proxy(sid, path):
         abort(502, f"Proxy error: {e}")
 
 
+@app.route("/static/<path:path>", methods=["GET", "POST", "PUT", "DELETE", "PATCH"])
+def static_proxy(path):
+    return catch_all(f"static/{path}")
+
+
 @app.route("/<path:path>", methods=["GET", "POST", "PUT", "DELETE", "PATCH"])
 def catch_all(path):
     sid = request.cookies.get("current_sid")
