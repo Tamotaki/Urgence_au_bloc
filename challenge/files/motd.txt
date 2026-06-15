@@ -1,9 +1,7 @@
-╔══════════════════════════════════════════════════╗
-║       HÔPITAL SAINT-LOUIS - SERVEUR INTERNE      ║
-║              Accès restreint                     ║
-╚══════════════════════════════════════════════════╝
+HÔPITAL SAINT-LOUIS - SERVEUR INTERNE
+Accès restreint
 
- ALERTE SÉCURITÉ - NIVEAU CRITIQUE
+ ATTENTION : SYSTEME COMPROMIS PAR SOLARIS
  
    Date détection   : 18/11/2024 03:52 UTC
    Incident #       : HSL-INC-2024-0847
@@ -30,14 +28,14 @@
      - Agir dans le strict cadre du plan de continuité (PCA-HSL-v4)
  
  
-   MISSION ACTIVE
+   MISSION EN COURS
  
-   Vous êtes l'opérateur de garde appelé pour la remédiation.
+   Tu es notre contact technique pour restaurer le service.
  
    Objectif       : Restaurer les sauvegardes du bloc opératoire
                     avant la reprise des activités à 07:00.
  
-   Temps imparti  : ~3h (chirurgies programmées à partir de 07:30)
+   Temps imparti  : environ 3h (chirurgies programmées à partir de 07:30)
  
    Procédure :
      1. Analyser les journaux d'accès web
@@ -66,4 +64,4 @@
    Contact SOC d'astreinte : soc-oncall@hsl.intra (poste 4242)
  
  
-   Bonne chance, opérateur. La vie des patients dépend de vous.
+   Bon courage. Les patients comptent sur toi pour débloquer la situation.

@@ -1,12 +1,16 @@
-@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@400;600;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Share+Tech+Mono&display=swap');
 
 :root {
-  --red-alert: #e11d48;
-  --red-dark: #9f1239;
-  --bg-dark: #0f172a;
-  --panel-dark: #1e293b;
-  --text-white: #f8fafc;
-  --text-muted: #94a3b8;
+  --danger-glow: #f43f5e;
+  --danger-dark: #881337;
+  --bg-cyber: #05070f;
+  --panel-cyber: rgba(13, 17, 28, 0.9);
+  --border-cyber: rgba(244, 63, 94, 0.25);
+  --border-cyber-active: rgba(244, 63, 94, 0.6);
+  --text-cyber: #f8fafc;
+  --text-cyber-muted: #64748b;
+  --text-cyber-dim: #334155;
+  --accent-amber: #f59e0b;
 }
 
 body.hacked-body {
@@ -14,11 +18,25 @@ body.hacked-body {
   padding: 0;
   height: 100vh;
   overflow: hidden;
-  background: var(--bg-dark);
-  font-family: 'Inter', sans-serif;
+  background: transparent;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--text-cyber);
 }
 
-/* Corrupt the background */
+/* Background grid overlay */
+body.hacked-body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: 
+    linear-gradient(rgba(244, 63, 94, 0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(244, 63, 94, 0.015) 1px, transparent 1px);
+  background-size: 24px 24px;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Corrupt background glitch */
 .corrupted-bg {
   position: absolute;
   top: 0;
@@ -26,15 +44,14 @@ body.hacked-body {
   width: 100%;
   height: 100%;
   z-index: 1;
-  filter: blur(8px) grayscale(50%) brightness(0.6) sepia(20%) hue-rotate(-20deg);
+  filter: blur(12px) grayscale(80%) brightness(0.25) contrast(1.2);
   pointer-events: none;
-  animation: glitch-bg 4s infinite alternate;
+  animation: bg-pulse 6s ease-in-out infinite alternate;
 }
 
-@keyframes glitch-bg {
-  0%   { filter: blur(8px) grayscale(50%) brightness(0.6) sepia(20%) hue-rotate(-20deg); }
-  50%  { filter: blur(10px) grayscale(40%) brightness(0.5) sepia(30%) hue-rotate(-30deg); }
-  100% { filter: blur(7px) grayscale(60%) brightness(0.7) sepia(10%) hue-rotate(-10deg); }
+@keyframes bg-pulse {
+  0% { filter: blur(12px) grayscale(80%) brightness(0.25) contrast(1.2); }
+  100% { filter: blur(14px) grayscale(90%) brightness(0.2) contrast(1.4); }
 }
 
 /* Ransomware Overlay Container */
@@ -48,218 +65,304 @@ body.hacked-body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(15, 23, 42, 0.65);
-  backdrop-filter: blur(2px);
+  background: rgba(3, 5, 12, 0.85);
+  backdrop-filter: blur(4px);
 }
 
-/* The Modal */
+/* Redesigned Hacked Modal */
 .ransom-modal {
   width: 90%;
-  max-width: 580px;
-  background: var(--bg-dark);
-  border: 1px solid var(--red-dark);
-  border-radius: 12px;
-  box-shadow: 0 0 40px rgba(225, 29, 72, 0.4), inset 0 0 15px rgba(0,0,0,0.5);
-  padding: 2rem 2.5rem;
-  color: var(--text-white);
+  max-width: 600px;
+  background: var(--panel-cyber);
+  border: 1px solid var(--border-cyber);
+  border-radius: 16px;
+  box-shadow: 
+    0 0 50px rgba(244, 63, 94, 0.15),
+    inset 0 0 20px rgba(0, 0, 0, 0.8);
+  padding: 2.5rem;
+  color: var(--text-cyber);
   text-align: center;
-  animation: modal-enter 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  animation: modal-slide-up 0.5s cubic-bezier(0.16, 1, 0.3, 1), modal-pulse-glow 5s infinite ease-in-out;
+  position: relative;
+  z-index: 101;
+  border-radius: 24px;
 }
 
-@keyframes modal-enter {
-  0% { transform: scale(0.9); opacity: 0; }
-  100% { transform: scale(1); opacity: 1; }
+@keyframes modal-slide-up {
+  0% { transform: translateY(20px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
 }
 
-/* Header */
+/* Header warning alert */
 .ransom-header {
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
 }
+
 .danger-icon {
-  font-size: 3rem;
-  color: var(--red-alert);
-  text-shadow: 0 0 15px rgba(225, 29, 72, 0.6);
+  font-family: inherit;
+  font-size: 1.1rem;
+  font-weight: 800;
+  background: var(--danger-glow);
+  color: var(--bg-cyber);
+  padding: 0.4rem 1rem;
+  border-radius: 4px;
+  letter-spacing: 0.1em;
+  animation: warning-flash 1.5s infinite steps(2);
+  box-shadow: 0 0 15px rgba(244, 63, 94, 0.5);
   margin-bottom: 0.5rem;
-  animation: blink 1.5s step-end infinite;
 }
-@keyframes blink { 50% { opacity: 0.3; } }
+
+@keyframes warning-flash {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
 
 .ransom-header h2 {
-  font-size: 1.8rem;
-  font-weight: 900;
+  font-size: 1.6rem;
+  font-weight: 800;
   letter-spacing: 0.05em;
-  color: var(--text-white);
+  color: var(--text-cyber);
   margin: 0;
+  text-transform: uppercase;
+  text-shadow: 0 0 10px rgba(244, 63, 94, 0.3);
+}
+
+/* Critical status texts */
+.critical-text {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--danger-glow);
+  letter-spacing: 0.05em;
+  margin-bottom: 1rem;
   text-transform: uppercase;
 }
 
-/* Body text */
-.critical-text {
-  font-size: 1rem;
-  font-weight: 700;
-  color: var(--red-alert);
-  margin-bottom: 1rem;
-}
 .desc-text {
-  font-size: 0.85rem;
-  color: var(--text-muted);
+  font-size: 0.8rem;
+  color: var(--text-cyber-muted);
   line-height: 1.6;
-  margin-bottom: 1.5rem;
-}
-
-/* Timer */
-.timer-box {
-  background: rgba(0,0,0,0.4);
-  border: 1px solid rgba(225, 29, 72, 0.3);
-  border-radius: 8px;
-  padding: 1rem;
-  margin-bottom: 1.5rem;
-}
-.timer-box p {
-  font-size: 0.75rem;
-  color: var(--text-muted);
-  margin-bottom: 0.5rem;
-  font-weight: 600;
-}
-.countdown-inline {
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 2.2rem;
-  font-weight: 700;
-  color: var(--red-alert);
-  text-shadow: 0 0 10px rgba(225, 29, 72, 0.5);
-  letter-spacing: 0.1em;
-}
-
-/* Crypto */
-.crypto-box {
-  background: var(--panel-dark);
-  padding: 1rem;
-  border-radius: 8px;
   margin-bottom: 2rem;
-  border-left: 4px solid var(--red-alert);
-  text-align: left;
-}
-.btc-amount {
-  font-size: 0.9rem;
-  font-weight: 600;
-  margin-bottom: 0.5rem;
-}
-.btc-amount span {
-  color: var(--red-alert);
-  font-size: 1.1rem;
-}
-.btc-address {
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 0.8rem;
-  background: rgba(0,0,0,0.5);
-  padding: 0.4rem;
-  border-radius: 4px;
-  color: #fbbf24;
-  word-break: break-all;
+  max-width: 480px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-/* Emergency Login */
-.emergency-login {
-  border-top: 1px solid rgba(255,255,255,0.1);
-  padding-top: 1.5rem;
+/* Countdown Box */
+.timer-box {
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(244, 63, 94, 0.2);
+  border-radius: 10px;
+  padding: 1.2rem;
+  margin-bottom: 2rem;
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
 }
-.emergency-login h3 {
-  font-size: 0.8rem;
-  color: var(--text-muted);
-  margin-bottom: 1rem;
+
+.timer-box p {
+  font-size: 0.7rem;
+  color: var(--text-cyber-muted);
+  margin-bottom: 0.5rem;
+  font-weight: 700;
   letter-spacing: 0.05em;
 }
 
-.alert-error {
-  background: rgba(159, 18, 57, 0.2);
-  border: 1px solid var(--red-dark);
-  color: #fda4af;
+.countdown-inline {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--danger-glow);
+  text-shadow: 0 0 12px rgba(244, 63, 94, 0.6);
+  letter-spacing: 0.1em;
+}
+
+/* Cryptographic Info Box */
+.crypto-box {
+  background: rgba(13, 17, 28, 0.95);
+  padding: 1.25rem;
+  border-radius: 10px;
+  margin-bottom: 2.5rem;
+  border-left: 3px solid var(--danger-glow);
+  text-align: left;
+  border-top: 1px solid var(--border-cyber);
+  border-right: 1px solid var(--border-cyber);
+  border-bottom: 1px solid var(--border-cyber);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.btc-amount {
+  font-size: 0.85rem;
+  font-weight: 700;
+  margin-bottom: 0.65rem;
+}
+
+.btc-amount span {
+  color: var(--danger-glow);
+  font-size: 1.05rem;
+  text-shadow: 0 0 8px rgba(244, 63, 94, 0.4);
+}
+
+.btc-address {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.78rem;
+  background: rgba(0, 0, 0, 0.8);
   padding: 0.6rem;
   border-radius: 6px;
-  font-size: 0.8rem;
-  margin-bottom: 1rem;
+  color: var(--accent-amber);
+  border: 1px solid rgba(245, 158, 11, 0.15);
+  word-break: break-all;
+}
+
+/* Emergency Login Bypass Section */
+.emergency-login {
+  border-top: 1px solid rgba(244, 63, 94, 0.15);
+  padding-top: 2rem;
+}
+
+.emergency-login h3 {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-cyber-muted);
+  margin-bottom: 1.2rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.alert-error {
+  background: rgba(136, 19, 55, 0.3);
+  border: 1px solid var(--danger-dark);
+  color: #fecdd3;
+  padding: 0.75rem;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  margin-bottom: 1.2rem;
+  text-align: left;
 }
 
 .form-group-hacked {
-  margin-bottom: 0.8rem;
+  margin-bottom: 1rem;
 }
+
 .form-group-hacked input {
   width: 100%;
-  padding: 0.75rem 1rem;
-  background: var(--panel-dark);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 6px;
-  color: var(--text-white);
+  padding: 0.85rem 1.1rem;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid var(--border-cyber);
+  border-radius: 8px;
+  color: var(--text-cyber);
+  font-family: inherit;
   font-size: 0.85rem;
   outline: none;
-  transition: all 0.2s;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   box-sizing: border-box;
 }
+
 .form-group-hacked input:focus {
-  border-color: var(--red-alert);
-  box-shadow: 0 0 0 2px rgba(225, 29, 72, 0.2);
+  border-color: var(--danger-glow);
+  box-shadow: 0 0 0 3px rgba(244, 63, 94, 0.2);
+  background: rgba(0,0,0,0.7);
 }
 
 .btn-hacked-login {
   width: 100%;
-  padding: 0.8rem;
-  background: var(--red-alert);
-  color: white;
+  padding: 0.9rem;
+  background: var(--danger-glow);
+  color: var(--bg-cyber);
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
+  font-family: inherit;
   font-size: 0.85rem;
-  font-weight: 700;
+  font-weight: 800;
   cursor: pointer;
-  transition: background 0.2s;
+  letter-spacing: 0.05em;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
+
 .btn-hacked-login:hover {
-  background: var(--red-dark);
+  background: #ffffff;
+  color: var(--bg-cyber);
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
 }
 
 .ransom-footer {
-  margin-top: 1.5rem;
-  font-size: 0.65rem;
-  color: rgba(255,255,255,0.3);
+  margin-top: 2rem;
+  font-size: 0.62rem;
+  color: var(--text-cyber-dim);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
 }
 
-/* Dashboard Hacked Styles */
+/* Compromised Dashboard Styles */
 .hacked-dashboard {
-  background: var(--bg-dark);
-  color: var(--text-white);
+  background: transparent;
+  color: var(--text-cyber);
   height: 100vh;
-  padding: 2rem;
+  padding: 2.5rem;
+  position: relative;
+  z-index: 5;
 }
+
 .access-granted-banner {
-  background: rgba(16, 185, 129, 0.1);
-  border: 1px solid #059669;
+  background: rgba(16, 185, 129, 0.05);
+  border: 1px solid rgba(16, 185, 129, 0.3);
   padding: 2rem;
-  border-radius: 8px;
+  border-radius: 12px;
   text-align: center;
   margin-bottom: 2rem;
+  box-shadow: 0 0 30px rgba(16, 185, 129, 0.05);
 }
+
 .ag-title {
   color: #34d399;
-  font-size: 1.5rem;
-  font-weight: 700;
-  margin-bottom: 0.5rem;
+  font-size: 1.4rem;
+  font-weight: 800;
+  margin-bottom: 0.4rem;
+  letter-spacing: 0.05em;
 }
+
 .ag-sub {
-  color: #6ee7b7;
-  font-size: 0.9rem;
+  color: #a7f3d0;
+  font-size: 0.8rem;
+  font-weight: 500;
 }
+
 .admin-panel {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.25rem;
 }
+
 .admin-card {
-  background: var(--panel-dark);
-  border: 1px solid rgba(255,255,255,0.1);
-  padding: 1.5rem;
-  border-radius: 8px;
-  color: var(--text-muted);
+  background: rgba(13, 17, 28, 0.6);
+  border: 1px solid var(--border-cyber);
+  padding: 1.75rem;
+  border-radius: 12px;
+  color: var(--text-cyber-muted);
+  font-weight: 600;
+  font-size: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
+
 .admin-card.locked {
-  opacity: 0.5;
+  opacity: 0.4;
   cursor: not-allowed;
+  border-color: rgba(244, 63, 94, 0.1);
+  background: rgba(3, 5, 12, 0.4);
 }
+
+@keyframes modal-pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 40px rgba(244, 63, 94, 0.15), inset 0 0 20px rgba(0, 0, 0, 0.8);
+    border-color: rgba(244, 63, 94, 0.25);
+  }
+  50% {
+    box-shadow: 0 0 60px rgba(244, 63, 94, 0.35), inset 0 0 20px rgba(0, 0, 0, 0.8);
+    border-color: rgba(244, 63, 94, 0.5);
+  }
+}
+#cyber-bg { position: fixed; inset: 0; z-index: -1; pointer-events: none; }

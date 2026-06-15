@@ -3,69 +3,81 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>BlocManager - Portail de Crise DSI</title>
+  <title>Urgence au bloc</title>
+  <link rel="icon" type="image/png" href="/favicon.png"/>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
     :root {
-      --bg: #0b0f19;
-      --panel: #151d30;
-      --panel-hover: #1c273e;
-      --panel-dark: rgba(0, 0, 0, 0.2);
+      --bg: #090d16;
+      --panel: #0d1322;
+      --panel-dark: #070b14;
       --border: rgba(255, 255, 255, 0.08);
-      --border-hi: rgba(255, 255, 255, 0.15);
+      --border-hover: rgba(255, 255, 255, 0.15);
       --text: #f8fafc;
       --text-muted: #94a3b8;
-      --text-dim: #475569;
-      --primary: #2563eb;
-      --primary-hover: #1d4ed8;
-      --red: #ef4444;
-      --red-dim: rgba(239, 68, 68, 0.1);
-      --green: #10b981;
-      --green-dim: rgba(16, 185, 129, 0.1);
-      --amber: #f59e0b;
-      --amber-dim: rgba(245, 158, 11, 0.1);
-      --font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --text-dark: #64748b;
+      
+      --accent: #ef4444; 
+      --accent-dim: rgba(239, 68, 68, 0.08);
+      --accent-border: rgba(239, 68, 68, 0.25);
+      
+      --success: #10b981;
+      --success-dim: rgba(16, 185, 129, 0.08);
+      --success-border: rgba(16, 185, 129, 0.2);
+
+      --info: #3b82f6;
+      --info-dim: rgba(59, 130, 246, 0.08);
+      --info-border: rgba(59, 130, 246, 0.25);
+
+      --font-body: 'Plus Jakarta Sans', 'Inter', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
     }
 
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
     body {
       background-color: var(--bg);
       color: var(--text);
-      font-family: var(--font-family);
+      font-family: var(--font-body);
       font-size: 13px;
       height: 100vh;
       overflow: hidden;
       display: flex;
       flex-direction: column;
+      position: relative;
     }
 
-    /* Subtle background grid */
-    body::before {
-      content: '';
+    .bg-grid {
       position: fixed;
       inset: 0;
-      background-image: linear-gradient(rgba(255, 255, 255, 0.005) 1px, transparent 1px),
-                        linear-gradient(90deg, rgba(255, 255, 255, 0.005) 1px, transparent 1px);
-      background-size: 30px 30px;
+      background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.012) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.012) 1px, transparent 1px);
+      background-size: 40px 40px;
       pointer-events: none;
       z-index: 1;
     }
 
-    /* 
-       TOPBAR
-     */
+    /* Topbar */
     .topbar {
       display: flex;
       align-items: center;
-      height: 56px;
+      height: 64px;
       border-bottom: 1px solid var(--border);
       background: var(--panel);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
       flex-shrink: 0;
       padding: 0 1.5rem;
       justify-content: space-between;
       user-select: none;
       z-index: 100;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
     }
 
     .tb-left {
@@ -77,44 +89,43 @@
     .tb-brand {
       display: flex;
       align-items: center;
-      gap: 0.5rem;
-      font-size: 0.9rem;
+      gap: 0.6rem;
       font-weight: 700;
-      letter-spacing: 0.02em;
+      font-size: 0.92rem;
+      letter-spacing: -0.01em;
       color: #fff;
     }
 
-    .tb-brand .status-indicator {
-      width: 7px; height: 7px;
+    .status-indicator {
+      width: 6px;
+      height: 6px;
       border-radius: 50%;
-      background: var(--red);
-      box-shadow: 0 0 6px var(--red);
+      background: var(--accent);
     }
 
     .tb-tabs {
       display: flex;
       align-items: center;
-      background: var(--panel-dark);
+      background: rgba(0, 0, 0, 0.25);
       border: 1px solid var(--border);
       border-radius: 6px;
       padding: 2px;
-      height: 36px;
+      height: 38px;
     }
 
     .tb-tab {
       display: flex;
       align-items: center;
-      gap: 0.4rem;
-      padding: 0 1.1rem;
+      padding: 0 1.25rem;
       height: 100%;
-      font-size: 0.78rem;
+      font-size: 0.8rem;
       font-weight: 600;
       color: var(--text-muted);
       cursor: pointer;
       border: none;
       background: transparent;
       border-radius: 4px;
-      transition: all 0.15s ease-in-out;
+      transition: all 0.15s ease;
     }
 
     .tb-tab:hover {
@@ -123,11 +134,14 @@
 
     .tb-tab.active {
       color: #fff;
-      background: var(--primary);
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.05);
     }
 
     .tb-tab.active.terminal-tab {
-      background: var(--green);
+      background: var(--info-dim);
+      color: #93c5fd;
+      border: 1px solid var(--info-border);
     }
 
     .tb-right {
@@ -137,69 +151,59 @@
     }
 
     .timer-display {
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-      color: var(--amber);
-      font-weight: 600;
-      background: var(--amber-dim);
-      border: 1px solid rgba(245, 158, 11, 0.3);
-      padding: 0.3rem 0.75rem;
-      border-radius: 4px;
-      font-size: 0.78rem;
+      font-family: var(--font-mono);
+      color: #fff;
+      font-weight: 700;
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid var(--border);
+      padding: 0.45rem 1rem;
+      border-radius: 6px;
+      font-size: 0.82rem;
     }
 
     .timer-display.urgent {
-      color: var(--red);
-      background: var(--red-dim);
-      border-color: rgba(239, 68, 68, 0.4);
+      color: var(--accent);
+      background: var(--accent-dim);
+      border-color: var(--accent-border);
     }
 
     .toggle-sidebar-btn {
       display: flex;
       align-items: center;
-      gap: 0.4rem;
-      padding: 0.4rem 0.85rem;
-      border-radius: 4px;
-      background: rgba(255,255,255,0.03);
+      padding: 0.45rem 0.85rem;
+      border-radius: 6px;
+      background: transparent;
       border: 1px solid var(--border);
       color: var(--text-muted);
       cursor: pointer;
+      font-size: 0.78rem;
       font-weight: 600;
-      font-size: 0.72rem;
-      transition: all 0.15s;
+      transition: all 0.15s ease;
     }
 
     .toggle-sidebar-btn:hover {
-      background: rgba(255,255,255,0.06);
+      border-color: var(--border-hover);
       color: var(--text);
     }
 
     .action-btn-stop {
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-      padding: 0.4rem 0.85rem;
-      border-radius: 4px;
-      background: var(--red-dim);
-      border: 1px solid rgba(239, 68, 68, 0.3);
-      color: var(--red);
-      font-size: 0.72rem;
+      padding: 0.45rem 1rem;
+      border-radius: 6px;
+      background: var(--accent-dim);
+      border: 1px solid var(--accent-border);
+      color: #ef4444;
+      font-size: 0.78rem;
       font-weight: 700;
       cursor: pointer;
-      transition: all 0.15s ease-in-out;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
+      transition: all 0.15s ease;
     }
 
     .action-btn-stop:hover {
-      background: var(--red);
+      background: var(--accent);
       color: #fff;
     }
 
-    /* 
-       LAYOUT
-     */
+    /* Main Layout */
     .main-container {
       display: flex;
       flex: 1;
@@ -208,16 +212,14 @@
       z-index: 10;
     }
 
-    /* 
-       SIDEBAR: PROTOCOL CHECKS
-     */
+    /* Sidebar */
     .sidebar {
-      width: 320px;
+      width: 380px;
       border-right: 1px solid var(--border);
       background: var(--panel);
       display: flex;
       flex-direction: column;
-      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
       overflow-y: auto;
       flex-shrink: 0;
     }
@@ -229,131 +231,198 @@
     }
 
     .sidebar-header {
-      padding: 1.1rem;
+      padding: 1.25rem 1.5rem;
       border-bottom: 1px solid var(--border);
+      font-size: 0.82rem;
       font-weight: 700;
-      font-size: 0.85rem;
       color: #fff;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      font-family: var(--font-mono);
       display: flex;
+      justify-content: space-between;
       align-items: center;
-      gap: 0.5rem;
-      background: rgba(0,0,0,0.1);
     }
 
     .sidebar-content {
-      padding: 1.1rem;
+      padding: 1.5rem;
       display: flex;
       flex-direction: column;
-      gap: 1.25rem;
+      gap: 1.5rem;
     }
 
     .guide-section {
       display: flex;
       flex-direction: column;
-      gap: 0.85rem;
+      gap: 1rem;
     }
 
-    .guide-section-title {
-      font-size: 0.72rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--primary);
-    }
-
+    /* Step Cards Styling */
     .guide-step {
+      background: rgba(255, 255, 255, 0.01);
       border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 0.75rem;
-      background: var(--panel-dark);
-      display: flex;
-      gap: 0.65rem;
-      align-items: flex-start;
-    }
-
-    .guide-step.active {
-      border-color: rgba(37, 99, 235, 0.4);
-      background: rgba(37, 99, 235, 0.05);
-    }
-
-    .guide-step-check {
-      width: 15px;
-      height: 15px;
-      border-radius: 50%;
-      border: 1px solid var(--text-dim);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.58rem;
-      font-weight: 700;
-      color: transparent;
-      margin-top: 1px;
-      flex-shrink: 0;
-    }
-
-    .guide-step.done .guide-step-check {
-      border-color: var(--green);
-      background: var(--green-dim);
-      color: var(--green);
-    }
-
-    .guide-step-body {
+      border-radius: 8px;
+      padding: 1.25rem;
       display: flex;
       flex-direction: column;
-      gap: 0.15rem;
+      gap: 0.85rem;
+      transition: all 0.15s ease;
+      position: relative;
+    }
+
+    .step-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .step-meta {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .step-number {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 700;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+      padding: 0.2rem 0.4rem;
+      border-radius: 4px;
+      color: var(--text-muted);
+    }
+
+    .step-indicator-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--text-dark);
+      transition: all 0.2s;
     }
 
     .guide-step-title {
       font-weight: 600;
-      font-size: 0.78rem;
+      font-size: 0.95rem;
       color: #fff;
     }
 
     .guide-step-desc {
-      font-size: 0.72rem;
+      font-size: 0.82rem;
       color: var(--text-muted);
-      line-height: 1.35;
+      line-height: 1.5;
     }
 
-    /* COPIERS */
-    .cheat-box {
-      background: rgba(0, 0, 0, 0.4);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      padding: 0.45rem 0.6rem;
-      font-family: monospace;
-      font-size: 0.7rem;
-      color: var(--text);
+    /* Step Status States */
+    .guide-step.active {
+      border-color: var(--info-border);
+      background: rgba(59, 130, 246, 0.02);
+    }
+
+    .guide-step.active .step-indicator-dot {
+      background: var(--info);
+    }
+
+    .guide-step.active .step-number {
+      background: var(--info-dim);
+      border-color: var(--info-border);
+      color: #93c5fd;
+    }
+
+    .guide-step.done {
+      border-color: var(--success-border);
+      background: rgba(16, 185, 129, 0.01);
+    }
+
+    .guide-step.done .step-indicator-dot {
+      background: var(--success);
+    }
+
+    .guide-step.done .step-number {
+      background: var(--success-dim);
+      border-color: var(--success-border);
+      color: #a7f3d0;
+    }
+
+    .guide-step.done .guide-step-title {
+      color: var(--text-muted);
+      text-decoration: line-through;
+      text-decoration-color: rgba(255, 255, 255, 0.15);
+    }
+
+    /* Spoiler Boxes */
+    .spoiler-container {
+      margin-top: 0.5rem;
+    }
+
+    .spoiler-trigger {
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      margin-top: 0.35rem;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px dashed rgba(255, 255, 255, 0.15);
+      border-radius: 6px;
+      padding: 0.5rem;
+      color: #3b82f6;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 500;
+      cursor: pointer;
+      text-align: center;
+      user-select: none;
+      transition: all 0.15s ease;
+    }
+
+    .spoiler-trigger:hover {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: var(--info);
+    }
+
+    .spoiler-content {
+      display: none;
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.75rem;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: #93c5fd;
+      position: relative;
+    }
+
+    .spoiler-content.revealed {
+      display: block;
+    }
+
+    .cheat-box-btn-row {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 0.5rem;
     }
 
     .copy-btn {
-      background: rgba(255,255,255,0.05);
+      background: rgba(255, 255, 255, 0.05);
       border: 1px solid var(--border);
       color: var(--text-muted);
-      padding: 0.15rem 0.35rem;
-      border-radius: 3px;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
       cursor: pointer;
-      font-size: 0.6rem;
-      transition: all 0.1s;
+      font-size: 0.68rem;
+      font-weight: 600;
+      transition: all 0.15s ease;
     }
 
     .copy-btn:hover {
-      background: var(--primary);
+      background: var(--info-dim);
+      border-color: var(--info);
       color: #fff;
-      border-color: var(--primary);
     }
 
-    /* 
-       IFRAMES
-     */
+    /* Content Pane */
     .game-content {
       flex: 1;
       position: relative;
-      background: #000;
+      background: #06090f;
     }
 
     .iframe-pane {
@@ -373,22 +442,60 @@
       width: 100%;
       height: 100%;
       border: none;
-      background: #000;
+      background: #06090f;
     }
 
-    /* 
-       MODALS
-     */
+    /* Loading Overlay */
+    #loading-sandbox-overlay {
+      position: absolute;
+      inset: 0;
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+      gap: 1rem;
+    }
+
+    .loader-spin {
+      width: 32px;
+      height: 32px;
+      border: 2px solid rgba(255, 255, 255, 0.05);
+      border-top-color: var(--info);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    .loader-title {
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 0.05em;
+    }
+
+    .loader-desc {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      max-width: 300px;
+      line-height: 1.5;
+      text-align: center;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Overlay Modals */
     .overlay {
       display: none;
       position: fixed;
       inset: 0;
       z-index: 10000;
-      background: rgba(11, 15, 25, 0.95);
+      background: rgba(9, 13, 22, 0.9);
+      backdrop-filter: blur(4px);
       align-items: center;
       justify-content: center;
-      flex-direction: column;
-      gap: 1.5rem;
     }
 
     .overlay.show {
@@ -396,152 +503,159 @@
     }
 
     .modal-box {
-      max-width: 440px;
+      max-width: 400px;
       width: 90%;
       text-align: center;
       background: var(--panel);
       border: 1px solid var(--border);
-      padding: 2rem;
-      border-radius: 8px;
-      box-shadow: 0 15px 40px rgba(0,0,0,0.5);
-    }
-
-    .modal-icon {
-      font-size: 2.5rem;
-      margin-bottom: 0.85rem;
+      padding: 2.5rem;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
     }
 
     .modal-title {
-      font-size: 1.5rem;
+      font-size: 1.3rem;
       font-weight: 700;
-      color: var(--red);
-      margin-bottom: 0.85rem;
+      color: var(--accent);
     }
 
     .modal-text {
       color: var(--text-muted);
-      font-size: 0.82rem;
-      line-height: 1.5;
-      margin-bottom: 1.5rem;
+      font-size: 0.85rem;
+      line-height: 1.6;
     }
 
     .modal-btn {
-      display: inline-block;
-      color: var(--text);
-      font-size: 0.78rem;
+      color: #fff;
+      font-size: 0.85rem;
       font-weight: 600;
       text-decoration: none;
-      padding: 0.6rem 1.25rem;
-      background: var(--panel-dark);
-      border: 1px solid var(--border-hi);
-      border-radius: 4px;
+      padding: 0.75rem 1.5rem;
+      background: var(--accent);
+      border: none;
+      border-radius: 6px;
       cursor: pointer;
-      transition: all 0.15s ease-in-out;
+      transition: all 0.15s ease;
+      margin-top: 0.5rem;
     }
 
     .modal-btn:hover {
-      border-color: var(--text);
-      background: rgba(255,255,255,0.05);
-    }
-    @keyframes spin {
-      to { transform: rotate(360deg); }
+      background: #dc2626;
     }
   </style>
 </head>
 <body>
 
+  <div class="bg-grid"></div>
+
   <!-- TOPBAR -->
-  <div class="topbar">
+  <header class="topbar">
     <div class="tb-left">
       <div class="tb-brand">
         <div class="status-indicator"></div>
-        <span>CELLULE DE CRISE DSI</span>
+        <span>Cellule de Crise · Saint-Louis</span>
       </div>
       
-      <!-- Collapsible Guide Toggle -->
       <button class="toggle-sidebar-btn" onclick="toggleSidebar()">
-        📋 <span id="toggle-sidebar-text">Masquer les Instructions</span>
+        <span id="toggle-sidebar-text">Masquer les instructions</span>
       </button>
 
-      <!-- Tabs -->
       <div class="tb-tabs">
         <button class="tb-tab active" onclick="switchTab(this, 'pane-blocmanager')">
-          🌐 Site BlocManager
+          Portail Médical
         </button>
         <button class="tb-tab terminal-tab" onclick="switchTab(this, 'pane-terminal')">
-          💻 Terminal Attaquant
+          Console Terminal
         </button>
       </div>
     </div>
 
     <div class="tb-right">
-      <!-- Session timer -->
-      <div class="timer-display" id="session-timer">⏱ --:--:--</div>
-      
-      <!-- Teardown Button -->
+      <div class="timer-display" id="session-timer">--:--:--</div>
       <button class="action-btn-stop" onclick="stopSession()">
-        ⏹ Quitter
+        Quitter la session
       </button>
     </div>
-  </div>
+  </header>
 
   <!-- INTERFACE LAYOUT -->
   <div class="main-container">
     
-    <!-- LEFT SIDEBAR: RESOLUTION PROTOCOL -->
-    <div class="sidebar" id="mission-sidebar">
+    <!-- LEFT SIDEBAR: GUIDE -->
+    <aside class="sidebar" id="mission-sidebar">
       <div class="sidebar-header">
-        Protocole de Remédiation
+        <span>Incident Solaris</span>
       </div>
       <div class="sidebar-content">
         
         <div class="guide-section">
-          <div class="guide-section-title">Objectifs du Protocole</div>
           
           <!-- STEP 1 -->
-          <div class="guide-step done" id="g-step-1">
-            <div class="guide-step-check">✓</div>
-            <div class="guide-step-body">
-              <div class="guide-step-title">1. Localiser le Login</div>
-              <div class="guide-step-desc">Identifiez l'URL de connexion sur l'interface du site web hospitalier.</div>
+          <div class="guide-step" id="g-step-1">
+            <div class="step-top">
+              <span class="step-number">01</span>
+              <div class="step-indicator-dot"></div>
             </div>
+            <div class="guide-step-title">Localiser la brèche</div>
+            <p class="guide-step-desc">Explorez le site d'administration temporaire pour repérer la page de connexion de secours.</p>
           </div>
 
           <!-- STEP 2 -->
-          <div class="guide-step active" id="g-step-2">
-            <div class="guide-step-check">✓</div>
-            <div class="guide-step-body">
-              <div class="guide-step-title">2. Bypass SQLi</div>
-              <div class="guide-step-desc">Utilisez un payload (ex: <code>admin'--</code>) pour contourner la sécurité.</div>
+          <div class="guide-step" id="g-step-2">
+            <div class="step-top">
+              <span class="step-number">02</span>
+              <div class="step-indicator-dot"></div>
+            </div>
+            <div class="guide-step-title">Forcer l'accès</div>
+            <p class="guide-step-desc">Injectez un payload d'authentification SQL dans le formulaire pour forcer la connexion.</p>
+            <div class="spoiler-container">
+              <div class="spoiler-trigger" onclick="revealSpoiler(this)" id="trigger-sqli">Afficher l'indice SQLi</div>
+              <div class="spoiler-content" id="content-sqli">
+                <code id="code-sqli">admin'--</code>
+                <div class="cheat-box-btn-row">
+                  <button class="copy-btn" onclick="copyText('code-sqli')">Copier</button>
+                </div>
+              </div>
             </div>
           </div>
 
           <!-- STEP 3 -->
           <div class="guide-step" id="g-step-3">
-            <div class="guide-step-check">✓</div>
-            <div class="guide-step-body">
-              <div class="guide-step-title">3. Connexion de maintenance SSH</div>
-              <div class="guide-step-desc">
-                Notez les identifiants présents sur le panneau obtenu, ouvrez l'onglet <strong>Terminal</strong> et exécutez :
-                <div class="cheat-box">
-                  <span id="cmd-ssh">ssh operateur@localhost</span>
-                  <button class="copy-btn" onclick="copyText('cmd-ssh')">Copier</button>
+            <div class="step-top">
+              <span class="step-number">03</span>
+              <div class="step-indicator-dot"></div>
+            </div>
+            <div class="guide-step-title">Liaison SSH</div>
+            <p class="guide-step-desc">Notez les informations du tableau de bord de crise, puis connectez-vous via le terminal.</p>
+            <div class="spoiler-container">
+              <div class="spoiler-trigger" onclick="revealSpoiler(this)" id="trigger-ssh">Afficher les identifiants SSH</div>
+              <div class="spoiler-content" id="content-ssh">
+                <div>Commande : <code id="code-ssh-cmd">ssh operateur@localhost</code></div>
+                <div style="margin-top: 0.3rem;">Mot de passe : <code id="code-ssh-pass">Hopital2024</code></div>
+                <div class="cheat-box-btn-row">
+                  <button class="copy-btn" onclick="copyText('code-ssh-cmd')">Copier ssh</button>
                 </div>
-                Entrez le mot de passe <code>Hopital2024</code>.
               </div>
             </div>
           </div>
 
           <!-- STEP 4 -->
           <div class="guide-step" id="g-step-4">
-            <div class="guide-step-check">✓</div>
-            <div class="guide-step-body">
-              <div class="guide-step-title">4. Recherche de Clé (Logs)</div>
-              <div class="guide-step-desc">
-                Inspectez le fichier journal des accès pour identifier l'exfiltration de clé :
-                <div class="cheat-box">
-                  <span id="cmd-grep">cat /var/log/apache2/access.log</span>
-                  <button class="copy-btn" onclick="copyText('cmd-grep')">Copier</button>
+            <div class="step-top">
+              <span class="step-number">04</span>
+              <div class="step-indicator-dot"></div>
+            </div>
+            <div class="guide-step-title">Recherche de fuite</div>
+            <p class="guide-step-desc">Examinez les journaux HTTP pour extraire la clé secrète Solaris oubliée par l'attaquant.</p>
+            <div class="spoiler-container">
+              <div class="spoiler-trigger" onclick="revealSpoiler(this)" id="trigger-grep">Afficher la commande de log</div>
+              <div class="spoiler-content" id="content-grep">
+                <code id="code-grep">cat /var/log/apache2/access.log</code>
+                <div class="cheat-box-btn-row">
+                  <button class="copy-btn" onclick="copyText('code-grep')">Copier</button>
                 </div>
               </div>
             </div>
@@ -549,16 +663,19 @@
 
           <!-- STEP 5 -->
           <div class="guide-step" id="g-step-5">
-            <div class="guide-step-check">✓</div>
-            <div class="guide-step-body">
-              <div class="guide-step-title">5. Déchiffrement de Sauvegarde</div>
-              <div class="guide-step-desc">
-                Exécutez le script avec la clé XOR récupérée à l'étape 4 :
-                <div class="cheat-box">
-                  <span id="cmd-decrypt">python3 /tmp/ransomware_fake.py /tmp/backup.xor CLÉ</span>
-                  <button class="copy-btn" onclick="copyText('cmd-decrypt')">Copier</button>
+            <div class="step-top">
+              <span class="step-number">05</span>
+              <div class="step-indicator-dot"></div>
+            </div>
+            <div class="guide-step-title">Restauration base</div>
+            <p class="guide-step-desc">Exécutez le déchiffreur avec la clé identifiée pour décoder la sauvegarde système.</p>
+            <div class="spoiler-container">
+              <div class="spoiler-trigger" onclick="revealSpoiler(this)" id="trigger-decrypt">Afficher la commande de déchiffrement</div>
+              <div class="spoiler-content" id="content-decrypt">
+                <code id="code-decrypt">python3 /tmp/ransomware_fake.py /tmp/backup.xor CLÉ</code>
+                <div class="cheat-box-btn-row">
+                  <button class="copy-btn" onclick="copyText('code-decrypt')">Copier</button>
                 </div>
-                Le fichier décodé affichera la clé système finale.
               </div>
             </div>
           </div>
@@ -566,17 +683,17 @@
         </div>
 
       </div>
-    </div>
+    </aside>
 
     <!-- RIGHT CONTAINER: WEB APPLICATION IFRAMES -->
-    <div class="game-content" style="position: relative;">
+    <main class="game-content">
       <!-- Sandbox Loading Overlay -->
-      <div id="loading-sandbox-overlay" style="position: absolute; inset: 0; background: var(--bg); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 999; gap: 1.2rem;">
-        <div style="width: 44px; height: 44px; border: 3.5px solid rgba(37, 99, 235, 0.15); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite;"></div>
-        <div style="display: flex; flex-direction: column; align-items: center; gap: 0.3rem; text-align: center;">
-          <div style="font-weight: 700; font-size: 0.95rem; color: #fff; letter-spacing: 0.02em;">DÉMARRAGE DE LA SANDBOX...</div>
-          <div style="font-size: 0.75rem; color: var(--text-muted); max-width: 320px; line-height: 1.45;">Veuillez patienter pendant l'initialisation des services (Base de données, SSH, Nginx).</div>
-        </div>
+      <div id="loading-sandbox-overlay">
+        <div class="loader-spin"></div>
+        <div class="loader-title">INSTANCIATION DU BAC À SABLE...</div>
+        <p class="loader-desc">
+          Configuration de votre image Docker éphémère. Cette opération prend quelques secondes.
+        </p>
       </div>
 
       <div class="iframe-pane active" id="pane-blocmanager">
@@ -585,17 +702,16 @@
       <div class="iframe-pane" id="pane-terminal">
         <iframe id="iframe-terminal" src="" class="game-iframe"></iframe>
       </div>
-    </div>
+    </main>
 
   </div>
 
   <!-- OVERLAY EXPIRATION -->
   <div class="overlay" id="expire-overlay">
     <div class="modal-box">
-      <div class="modal-icon">⌛</div>
-      <div class="modal-title">Session Terminée</div>
+      <div class="modal-title">Session Expirée</div>
       <p class="modal-text">
-        La session d'investigation de 3 heures a expiré. Le conteneur Docker a été supprimé automatiquement de l'infrastructure.
+        Votre créneau d'enquête de 3 heures est terminé. L'environnement conteneurisé a été détruit par mesure de sécurité.
       </p>
       <a href="/" class="modal-btn">Retour au portail</a>
     </div>
@@ -604,10 +720,9 @@
   <!-- OVERLAY STOP -->
   <div class="overlay" id="error-overlay">
     <div class="modal-box">
-      <div class="modal-icon">💼</div>
-      <div class="modal-title">Instance Supprimée</div>
+      <div class="modal-title">Session Clôturée</div>
       <p class="modal-text" id="error-message">
-        La session a été fermée avec succès. L'instance temporaire a été détruite.
+        L'instance d'investigation a été arrêtée et ses volumes de stockage ont été vidés.
       </p>
       <a href="/" class="modal-btn">Retour au portail</a>
     </div>
@@ -656,16 +771,6 @@
       if (pane) pane.classList.add('active');
     }
 
-    // Toggle checklist step completion manually
-    document.querySelectorAll('.guide-step').forEach(step => {
-      step.style.cursor = 'pointer';
-      step.addEventListener('click', function() {
-        this.classList.toggle('done');
-        // Toggle active status as well for visual styling
-        this.classList.toggle('active');
-      });
-    });
-
     // Toggle Collapsible Left Sidebar Guide
     function toggleSidebar() {
       const sidebar = document.getElementById('mission-sidebar');
@@ -673,17 +778,33 @@
       sidebar.classList.toggle('collapsed');
       
       if (sidebar.classList.contains('collapsed')) {
-        toggleText.textContent = "Afficher les Instructions";
+        toggleText.textContent = "Afficher les instructions";
       } else {
-        toggleText.textContent = "Masquer les Instructions";
+        toggleText.textContent = "Masquer les instructions";
+      }
+    }
+
+    // Spoilers reveal handler
+    function revealSpoiler(triggerEl) {
+      const container = triggerEl.parentElement;
+      const content = container.querySelector('.spoiler-content');
+      if (content) {
+        triggerEl.style.display = 'none';
+        content.classList.add('revealed');
       }
     }
 
     // Copying utility
     function copyText(id) {
-      const text = document.getElementById(id).textContent;
+      const el = document.getElementById(id);
+      const text = el.textContent;
       navigator.clipboard.writeText(text).then(() => {
-        alert("Texte copié dans le presse-papier.");
+        const btn = el.parentElement.querySelector('.copy-btn');
+        if (btn) {
+          const originalText = btn.textContent;
+          btn.textContent = "Copié !";
+          setTimeout(() => btn.textContent = originalText, 1500);
+        }
       }).catch(err => {
         console.error("Erreur de copie", err);
       });
@@ -730,12 +851,36 @@
           const h = String(Math.floor(remaining / 3600)).padStart(2, '0');
           const m = String(Math.floor((remaining % 3600) / 60)).padStart(2, '0');
           const s = String(remaining % 60).padStart(2, '0');
-          timerEl.textContent = `⏱ ${h}:${m}:${s}`;
+          timerEl.textContent = `${h}:${m}:${s}`;
 
           if (remaining < 600) {
             timerEl.classList.add('urgent');
           } else {
             timerEl.classList.remove('urgent');
+          }
+
+          // Update checklist steps status dynamically
+          if (data.steps) {
+            let firstIncompleteFound = false;
+            for (let i = 1; i <= 5; i++) {
+              const stepKey = "step" + i;
+              const stepEl = document.getElementById("g-step-" + i);
+              if (stepEl) {
+                const isDone = data.steps[stepKey];
+                if (isDone) {
+                  stepEl.classList.add("done");
+                  stepEl.classList.remove("active");
+                } else {
+                  stepEl.classList.remove("done");
+                  if (!firstIncompleteFound) {
+                    stepEl.classList.add("active");
+                    firstIncompleteFound = true;
+                  } else {
+                    stepEl.classList.remove("active");
+                  }
+                }
+              }
+            }
           }
         })
         .catch(err => {
@@ -746,5 +891,6 @@
     checkStatus();
     setInterval(checkStatus, 2500);
   </script>
+
 </body>
 </html>

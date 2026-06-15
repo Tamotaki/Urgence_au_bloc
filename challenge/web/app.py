@@ -44,6 +44,15 @@ def init_db():
     con.commit()
     con.close()
 
+@app.before_request
+def record_step1():
+    if not os.path.exists("/tmp/.step1_done"):
+        try:
+            with open("/tmp/.step1_done", "w") as f:
+                f.write("done")
+        except Exception:
+            pass
+
 # ROUTES RANSOMWARE (page piratée)
 @app.route("/", methods=["GET"])
 def index():
@@ -57,7 +66,7 @@ def login():
     try:
         con = sqlite3.connect(DB_PATH)
         cur = con.cursor()
-        # ⚠ VULNERABILITE INTENTIONNELLE : injection SQL
+        # VULNERABILITE INTENTIONNELLE : injection SQL
         query = f"SELECT * FROM users WHERE username='{username}' AND password='{password}'"
         cur.execute(query)
         user = cur.fetchone()
@@ -66,6 +75,11 @@ def login():
             session["user"] = user[1]
             session["role"] = user[3]
             session["mode"] = "hacked"
+            try:
+                with open("/tmp/.step2_done", "w") as f:
+                    f.write("done")
+            except Exception:
+                pass
             return redirect(url_for("dashboard_hacked"))
         else:
             error = "Identifiants incorrects."
@@ -91,7 +105,7 @@ def login_clean():
     error = None
     con = sqlite3.connect(DB_PATH)
     cur = con.cursor()
-    # ✅ REQUETE PARAMETREE : protection contre SQLi
+    # REQUETE PARAMETREE : protection contre SQLi
     cur.execute("SELECT * FROM users WHERE username=? AND password=?", (username, password))
     user = cur.fetchone()
     con.close()

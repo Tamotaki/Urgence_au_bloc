@@ -13,15 +13,7 @@ import time
 import hashlib
 
 
-BANNER = r"""
-   _____  ___  _      ___  ____  ___  ____
-  / ___/ / _ \| |    / _ \|  _ \|_ _|/ ___|
-  \___ \| | | | |   | | | | |_) || | \___ \
-   ___) | |_| | |___| |_| |  _ < | |  ___) |
-  |____/ \___/|_____|\___/|_| \_\___||____/
-
-           D E C R Y P T O R   v 2 . 4
-"""
+BANNER = "S0lar1s Decryptor v2.4"
 
 
 # Petit effet typewriter
@@ -135,24 +127,32 @@ def main():
             result = decrypted.decode("utf-8", errors="replace")
 
         print()
-        print("  [+] DECHIFFREMENT REUSSI - DONNEES RESTAUREES")
+        print("  DECHIFFREMENT REUSSI - DONNEES RESTAUREES")
         print()
-        print("=" * 64)
+        print()
         print(result)
-        print("=" * 64)
+        print()
 
         # Sauvegarde optionnelle du resultat
         out_path = filepath + ".decrypted"
         try:
             with open(out_path, "w") as f:
                 f.write(result)
-            print(f"\n  [+] Copie sauvegardee dans : {out_path}")
+            print(f"\n  Copie sauvegardee dans : {out_path}")
+            
+            # Touch status files for step validation
+            for step_file in ["/tmp/.step4_done", "/tmp/.step5_done"]:
+                try:
+                    with open(step_file, "w") as sf:
+                        sf.write("done")
+                except Exception:
+                    pass
         except OSError as e:
             print(f"\n  [!] Impossible d'ecrire la copie ({e})")
         sys.exit(0)
     else:
         print()
-        print("  [!] ECHEC - la cle semble incorrecte")
+        print("  ECHEC - la cle semble incorrecte")
         print()
         print("  Le resultat ne ressemble pas a du texte lisible.")
         print("  Verifie la cle et reessaie.")

@@ -112,37 +112,16 @@ def make_log_line(t, ip, method, path, status, size, ua, referer="-"):
 
 
 # Genere du trafic de fond credible
-def generate_noise_events(start_time, duration_minutes=120):
+def generate_noise_events(start_time, count=3):
     events = []
-    end_time = start_time + datetime.timedelta(minutes=duration_minutes)
     t = start_time
-
-    while t < end_time:
-        # Trafic legitime hospitalier
-        for _ in range(random.randint(2, 6)):
-            ip = random.choice(LEGIT_IPS)
-            path, status, size = random.choice(LEGIT_PATHS)
-            ua = random.choice(LEGIT_UAS)
-            method = "GET" if random.random() < 0.85 else "POST"
-            events.append((t, ip, method, path, status, size, ua, "-"))
-            t += datetime.timedelta(seconds=random.randint(1, 8))
-
-        # Healthcheck monitoring
-        if random.random() < 0.4:
-            events.append((t, "127.0.0.1", "GET", "/api/health", 200, 47,
-                          "Prometheus/2.45.0", "-"))
-            t += datetime.timedelta(seconds=random.randint(2, 5))
-
-        # Bot ou scanner aleatoire
-        if random.random() < 0.25:
-            ip = random.choice(NOISE_IPS)
-            path, status, size = random.choice(SCAN_PATHS)
-            ua = random.choice(BOT_UAS)
-            events.append((t, ip, "GET", path, status, size, ua, "-"))
-            t += datetime.timedelta(seconds=random.randint(3, 15))
-
-        t += datetime.timedelta(seconds=random.randint(5, 20))
-
+    for _ in range(count):
+        ip = random.choice(LEGIT_IPS)
+        path, status, size = random.choice(LEGIT_PATHS)
+        ua = random.choice(LEGIT_UAS)
+        method = "GET" if random.random() < 0.85 else "POST"
+        events.append((t, ip, method, path, status, size, ua, "-"))
+        t += datetime.timedelta(seconds=random.randint(15, 45))
     return events
 
 
@@ -152,79 +131,19 @@ def generate_attack_events(start_time):
     BROWSER_UA = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36"
 
     attack = [
-        # Phase 1 : reconnaissance manuelle
-        (0,    "GET",  "/",                 200, 1842,  BROWSER_UA, "-"),
-        (4,    "GET",  "/static/css/main.css", 200, 4521, BROWSER_UA, "https://saint-louis-srv/"),
-        (5,    "GET",  "/static/js/app.js", 200, 12480, BROWSER_UA, "https://saint-louis-srv/"),
-        (8,    "GET",  "/login",            200, 1024,  BROWSER_UA, "https://saint-louis-srv/"),
-        (12,   "GET",  "/robots.txt",       200, 64,    BROWSER_UA, "-"),
-        (18,   "GET",  "/admin",            404, 196,   BROWSER_UA, "-"),
-        (22,   "GET",  "/.env",             404, 196,   BROWSER_UA, "-"),
-        (28,   "GET",  "/api/v1/users",     404, 196,   BROWSER_UA, "-"),
-        (35,   "GET",  "/dashboard",        302, 0,     BROWSER_UA, "-"),
-        (36,   "GET",  "/login?next=/dashboard", 200, 1102, BROWSER_UA, "-"),
-
-        # Phase 2 : tentatives manuelles de login
-        (52,   "POST", "/login",            401, 312,   BROWSER_UA, "https://saint-louis-srv/login"),
-        (61,   "POST", "/login",            401, 312,   BROWSER_UA, "https://saint-louis-srv/login"),
-        (74,   "POST", "/login",            401, 312,   BROWSER_UA, "https://saint-louis-srv/login"),
-        (89,   "POST", "/login",            401, 312,   BROWSER_UA, "https://saint-louis-srv/login"),
-
-        # Phase 3 : passage a sqlmap
-        (142,  "GET",  "/login",            200, 1024,  SQLMAP_UA, "-"),
-        (143,  "POST", "/login",            401, 312,   SQLMAP_UA, "-"),
-        (144,  "POST", "/login",            401, 312,   SQLMAP_UA, "-"),
-        (145,  "POST", "/login",            401, 312,   SQLMAP_UA, "-"),
-        (146,  "POST", "/login",            500, 480,   SQLMAP_UA, "-"),
-        (147,  "POST", "/login",            500, 480,   SQLMAP_UA, "-"),
-        (148,  "POST", "/login",            401, 312,   SQLMAP_UA, "-"),
-        (149,  "POST", "/login",            401, 312,   SQLMAP_UA, "-"),
-        (150,  "POST", "/login",            500, 480,   SQLMAP_UA, "-"),
-        (151,  "POST", "/login",            401, 312,   SQLMAP_UA, "-"),
-        (152,  "POST", "/login",            500, 480,   SQLMAP_UA, "-"),
-        (153,  "POST", "/login",            401, 312,   SQLMAP_UA, "-"),
-        (154,  "POST", "/login",            401, 312,   SQLMAP_UA, "-"),
-        (155,  "POST", "/login",            500, 480,   SQLMAP_UA, "-"),
-        (156,  "POST", "/login",            401, 312,   SQLMAP_UA, "-"),
-        (157,  "POST", "/login",            401, 312,   SQLMAP_UA, "-"),
-        (158,  "POST", "/login",            500, 480,   SQLMAP_UA, "-"),
-        (159,  "POST", "/login",            401, 312,   SQLMAP_UA, "-"),
-        (160,  "POST", "/login",            401, 312,   SQLMAP_UA, "-"),
-        (161,  "POST", "/login",            500, 480,   SQLMAP_UA, "-"),
-        (162,  "POST", "/login",            401, 312,   SQLMAP_UA, "-"),
-
-        # Boucle massive sqlmap boolean-based
-        *[(163 + i, "POST", "/login", random.choice([401, 401, 401, 500]), 312, SQLMAP_UA, "-")
-          for i in range(40)],
-
-        # Phase 4 : injection reussie
-        (208,  "POST", "/login",            302, 0,     SQLMAP_UA, "-"),
-        (210,  "GET",  "/dashboard",        200, 5421,  SQLMAP_UA, "-"),
-        (215,  "GET",  "/dashboard/patients", 200, 8234, SQLMAP_UA, "-"),
-
-        # Phase 5 : retour au navigateur, exploration manuelle
-        (231,  "POST", "/login",            302, 0,     BROWSER_UA, "-"),
-        (232,  "GET",  "/dashboard",        200, 5421,  BROWSER_UA, "https://saint-louis-srv/login"),
-        (245,  "GET",  "/dashboard/patients", 200, 8234, BROWSER_UA, "https://saint-louis-srv/dashboard"),
-        (267,  "GET",  "/dashboard/plannings", 200, 6789, BROWSER_UA, "https://saint-louis-srv/dashboard"),
-        (289,  "GET",  "/api/bloc/list",    200, 2145,  BROWSER_UA, "https://saint-louis-srv/dashboard"),
-        (312,  "GET",  "/dashboard/admin",  403, 218,   BROWSER_UA, "https://saint-louis-srv/dashboard"),
-
-        # Phase 6 : upload (webshell ou backdoor)
-        (387,  "GET",  "/api/upload",       405, 102,   BROWSER_UA, "-"),
-        (392,  "POST", "/api/upload",       200, 84,    BROWSER_UA, "https://saint-louis-srv/dashboard"),
-        (401,  "GET",  "/uploads/note.txt", 200, 312,   BROWSER_UA, "-"),
-
-        # Phase 7 : exfiltration du fichier chiffre
-        (478,  "GET",  "/tmp/backup.xor",   200, 512,   BROWSER_UA, "-"),
-
-        # Phase 8 : fuite de cle (User-Agent custom)
-        (522,  "GET",  "/",                 200, 1842,  f"XOR_KEY={XOR_KEY}", "-"),
-
-        # Phase 9 : nettoyage et deconnexion
-        (598,  "GET",  "/dashboard",        200, 5421,  BROWSER_UA, "-"),
-        (612,  "POST", "/logout",           302, 0,     BROWSER_UA, "-"),
-        (614,  "GET",  "/login",            200, 1024,  BROWSER_UA, "-"),
+        # Phase 1 : reconnaissance
+        (0,    "GET",  "/login",            200, 1024,  BROWSER_UA, "-"),
+        # Phase 2 : tentative SQLi
+        (10,   "POST", "/login",            500, 480,   SQLMAP_UA, "-"),
+        (12,   "POST", "/login",            302, 0,     SQLMAP_UA, "-"),
+        # Phase 3 : dashboard & upload note
+        (15,   "GET",  "/dashboard",        200, 5421,  BROWSER_UA, "-"),
+        (20,   "POST", "/api/upload",       200, 84,    BROWSER_UA, "-"),
+        (25,   "GET",  "/uploads/note.txt", 200, 312,   BROWSER_UA, "-"),
+        # Phase 4 : exfiltration backup
+        (30,   "GET",  "/tmp/backup.xor",   200, 512,   BROWSER_UA, "-"),
+        # Phase 5 : fuite de clé (User-Agent custom)
+        (35,   "GET",  "/",                 200, 1842,  f"XOR_KEY={XOR_KEY}", "-"),
     ]
 
     events = []
@@ -237,23 +156,22 @@ def generate_attack_events(start_time):
 # Genere le access.log final
 def generate_apache_logs():
     os.makedirs(LOG_DIR, exist_ok=True)
-    base_time = datetime.datetime(2024, 11, 18, 2, 15, 0)
+    base_time = datetime.datetime(2024, 11, 18, 3, 20, 0)
 
     # Bruit avant l'attaque
-    noise_before = generate_noise_events(base_time, duration_minutes=83)
+    noise_before = generate_noise_events(base_time, count=5)
 
     # L'attaque commence a 03:38
     attack_start = datetime.datetime(2024, 11, 18, 3, 38, 0)
     attack = generate_attack_events(attack_start)
 
-    # Bruit pendant et apres l'attaque
-    noise_during = generate_noise_events(attack_start, duration_minutes=30)
+    # Bruit apres l'attaque
     noise_after = generate_noise_events(
-        attack_start + datetime.timedelta(minutes=15),
-        duration_minutes=25,
+        attack_start + datetime.timedelta(seconds=40),
+        count=5,
     )
 
-    all_events = noise_before + attack + noise_during + noise_after
+    all_events = noise_before + attack + noise_after
     all_events.sort(key=lambda e: e[0])
 
     lines = [make_log_line(*e) for e in all_events]

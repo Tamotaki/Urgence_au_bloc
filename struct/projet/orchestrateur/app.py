@@ -4,7 +4,7 @@ import threading
 import time
 import docker
 import requests as req
-from flask import Flask, jsonify, request, redirect, abort, render_template, Response, stream_with_context, make_response
+from flask import Flask, jsonify, request, redirect, abort, render_template, Response, stream_with_context, make_response, send_from_directory
 
 app = Flask(__name__, static_folder=None)
 
@@ -72,6 +72,16 @@ def cleanup():
             if now - s["started_at"] > TTL:
                 print(f"[*] Session {sid} expired. Cleaning up...")
                 kill(sid)
+
+
+@app.route("/favicon.png")
+def favicon():
+    return send_from_directory(os.path.join(os.path.dirname(__file__), "static"), "favicon.png", mimetype="image/png")
+
+
+@app.route("/favicon.ico")
+def favicon_ico():
+    return redirect("/favicon.png")
 
 
 @app.route("/")
@@ -268,11 +278,36 @@ def status(sid):
         return jsonify({"error": "session introuvable"}), 404
     s = sessions[sid]
     elapsed = int(time.time() - s["started_at"])
+    
+    steps = {
+        "step1": False,
+        "step2": False,
+        "step3": False,
+        "step4": False,
+        "step5": False
+    }
+    
+    if docker_client:
+        try:
+            container = docker_client.containers.get(s["container_id"])
+            exec_res = container.exec_run("sh -c 'test -f /tmp/.step1_done && echo 1 || echo 0; test -f /tmp/.step2_done && echo 1 || echo 0; test -f /tmp/.step3_done && echo 1 || echo 0; test -f /tmp/.step4_done && echo 1 || echo 0; test -f /tmp/.step5_done && echo 1 || echo 0'")
+            if exec_res.exit_code == 0:
+                out_lines = exec_res.output.decode().strip().split()
+                if len(out_lines) == 5:
+                    steps["step1"] = (out_lines[0] == "1")
+                    steps["step2"] = (out_lines[1] == "1")
+                    steps["step3"] = (out_lines[2] == "1")
+                    steps["step4"] = (out_lines[3] == "1")
+                    steps["step5"] = (out_lines[4] == "1")
+        except Exception as e:
+            print(f"Error checking steps inside container: {e}")
+
     return jsonify({
         "session_id": sid,
         "port": s["port"],
         "elapsed": elapsed,
-        "remaining": max(0, TTL - elapsed)
+        "remaining": max(0, TTL - elapsed),
+        "steps": steps
     })
 
 

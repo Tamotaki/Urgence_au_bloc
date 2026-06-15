@@ -3,14 +3,15 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>BlocManager - Tableau de bord</title>
+  <title>Urgence au bloc</title>
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}"/>
   <link rel="stylesheet" href="{{ url_for('static', filename='style_clean.css') }}"/>
 </head>
 <body class="dashboard-body">
 
   <nav class="navbar">
     <div class="nav-brand">
-      <span class="nav-icon">🏥</span>
+      <span class="nav-icon"></span>
       <span class="nav-title">BlocManager</span>
       <span class="nav-hospital">Hôpital Saint-Louis</span>
     </div>
@@ -29,15 +30,15 @@
   <div class="dashboard-layout">
     <aside class="sidebar">
       <nav class="side-nav">
-        <a href="#" class="side-link active">📅 Planning du jour</a>
-        <a href="#" class="side-link">🏨 Salles opératoires</a>
-        <a href="#" class="side-link">👨‍⚕️ Chirurgiens</a>
-        <a href="#" class="side-link">📋 Dossiers patients</a>
-        <a href="#" class="side-link">📦 Stock matériel</a>
-        <a href="#" class="side-link">📊 Rapports</a>
+        <a href="#" class="side-link active">Planning du jour</a>
+        <a href="#" class="side-link">Salles opératoires</a>
+        <a href="#" class="side-link">Chirurgiens</a>
+        <a href="#" class="side-link">Dossiers patients</a>
+        <a href="#" class="side-link">Stock matériel</a>
+        <a href="#" class="side-link">Rapports</a>
         {% if role == "admin" %}
         <div class="side-separator"></div>
-        <a href="#" class="side-link admin-link">⚙️ Administration</a>
+        <a href="#" class="side-link admin-link">Administration</a>
         {% endif %}
       </nav>
     </aside>
@@ -53,28 +54,28 @@
 
       <div class="stats-grid">
         <div class="stat-card">
-          <div class="stat-icon green">✅</div>
+          <div class="stat-icon green"></div>
           <div class="stat-body">
             <div class="stat-number">6</div>
             <div class="stat-desc">Actes planifiés</div>
           </div>
         </div>
         <div class="stat-card">
-          <div class="stat-icon blue">🏨</div>
+          <div class="stat-icon blue"></div>
           <div class="stat-body">
             <div class="stat-number">4</div>
             <div class="stat-desc">Blocs disponibles</div>
           </div>
         </div>
         <div class="stat-card">
-          <div class="stat-icon orange">⏳</div>
+          <div class="stat-icon orange"></div>
           <div class="stat-body">
             <div class="stat-number">2</div>
             <div class="stat-desc">En cours</div>
           </div>
         </div>
         <div class="stat-card">
-          <div class="stat-icon red">🚨</div>
+          <div class="stat-icon red"></div>
           <div class="stat-body">
             <div class="stat-number">0</div>
             <div class="stat-desc">Urgences</div>
@@ -86,7 +87,7 @@
         <div class="table-header">
           <h2>Réservations - Blocs opératoires</h2>
           <div class="table-actions">
-            <input type="text" class="search-input" placeholder="🔍 Rechercher…" id="search"/>
+            <input type="text" class="search-input" placeholder="Rechercher..." id="search"/>
             <select class="filter-select" id="filter-salle">
               <option value="">Toutes les salles</option>
               <option>Bloc A</option>
@@ -119,8 +120,8 @@
                 <td>{{ r[5] }}</td>
                 <td><span class="status-badge status-{{ r[6] }}">{{ r[6] }}</span></td>
                 <td class="actions-cell">
-                  <button class="btn-icon" title="Voir">👁</button>
-                  <button class="btn-icon" title="Modifier">✏️</button>
+                  <button class="btn-icon" title="Voir">Voir</button>
+                  <button class="btn-icon" title="Modifier">Modifier</button>
                 </td>
               </tr>
               {% endfor %}
@@ -131,5 +132,69 @@
     </main>
   </div>
   <script src="{{ url_for('static', filename='script_clean.js') }}"></script>
+
+
+  <!-- Dynamic Clinical Fluid Background -->
+  <canvas id="clean-bg"></canvas>
+  <script>
+    (function() {
+      const canvas = document.getElementById('clean-bg');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      let width = canvas.width = window.innerWidth;
+      let height = canvas.height = window.innerHeight;
+
+      const bubbles = [];
+      const bubbleCount = 18;
+
+      for (let i = 0; i < bubbleCount; i++) {
+        bubbles.push({
+          x: Math.random() * width,
+          y: Math.random() * height + height,
+          vx: (Math.random() - 0.5) * 0.2,
+          vy: -Math.random() * 0.25 - 0.1,
+          radius: Math.random() * 30 + 20,
+          alpha: Math.random() * 0.25 + 0.05
+        });
+      }
+
+      function draw() {
+        ctx.fillStyle = '#f8fafc';
+        ctx.fillRect(0, 0, width, height);
+
+        for (let i = 0; i < bubbleCount; i++) {
+          const b = bubbles[i];
+          b.x += b.vx;
+          b.y += b.vy;
+
+          if (b.y < -b.radius) {
+            b.y = height + b.radius;
+            b.x = Math.random() * width;
+          }
+          if (b.x < -b.radius || b.x > width + b.radius) {
+            b.vx *= -1;
+          }
+
+          ctx.beginPath();
+          const grad = ctx.createRadialGradient(b.x, b.y, 0, b.x, b.y, b.radius);
+          grad.addColorStop(0, 'rgba(16, 98, 179, ' + b.alpha + ')');
+          grad.addColorStop(1, 'rgba(16, 98, 179, 0)');
+          ctx.fillStyle = grad;
+          ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        requestAnimationFrame(draw);
+      }
+
+      window.addEventListener('resize', () => {
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+      });
+
+      draw();
+    })();
+  </script>
+
 </body>
 </html>

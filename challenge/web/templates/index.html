@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>BLOC MANAGER - SYSTÈME COMPROMIS</title>
+  <title>Urgence au bloc</title>
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}"/>
   <link rel="stylesheet" href="{{ url_for('static', filename='style_clean.css') }}"/>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"/>
 </head>
@@ -14,7 +15,7 @@
     <div class="sidebar-accent" style="background: var(--danger);"></div>
     <div class="login-container">
       <div class="brand">
-        <div class="brand-icon">🏥</div>
+        <div class="brand-icon"></div>
         <div class="brand-info">
           <div class="brand-name">Hôpital Saint-Louis</div>
           <div class="brand-sub">Gestion des Blocs Opératoires</div>
@@ -44,7 +45,7 @@
     </div>
     <div class="hero-panel" style="background: #1e293b;">
       <div class="hero-content">
-        <div class="hero-icon">⚕️</div>
+        <div class="hero-icon"></div>
         <h2>BlocManager</h2>
       </div>
     </div>
@@ -54,14 +55,14 @@
   <div class="ransomware-overlay">
     <div class="ransom-modal">
       <div class="ransom-header">
-        <div class="danger-icon">⚠</div>
+        <div class="danger-icon">[!]</div>
         <h2>SYSTÈME VERROUILLÉ</h2>
       </div>
       
       <div class="ransom-body">
-        <p class="critical-text">ATTENTION: VOS DONNÉES ONT ÉTÉ CHIFFRÉES (AES-256)</p>
+        <p class="critical-text">ALERTE : VOS BASES DE DONNÉES SONT COMPROMISES</p>
         <p class="desc-text">
-          Le réseau de l'Hôpital Saint-Louis a été compromis. Les dossiers patients, les plannings opératoires et les accès administrateurs sont désormais inaccessibles.
+          Le serveur BlocManager a été chiffré par le collectif Solaris. Plus aucun planning ni dossier médical n'est accessible. Ne tentez pas de couper le serveur.
         </p>
 
         <div class="timer-box">
@@ -79,7 +80,7 @@
       <div class="emergency-login">
         <h3>ACCÈS ADMINISTRATEUR DE SECOURS</h3>
         {% if error %}
-        <div class="alert alert-error">⛔ {{ error }}</div>
+        <div class="alert alert-error">Erreur: {{ error }}</div>
         {% endif %}
         <form action="/login" method="POST" autocomplete="off">
           <div class="form-group-hacked">
@@ -88,7 +89,7 @@
           <div class="form-group-hacked">
             <input type="password" id="password" name="password" placeholder="Mot de passe" autocomplete="new-password"/>
           </div>
-          <button type="submit" class="btn-hacked-login">TENTER L'ACCÈS</button>
+          <button type="submit" class="btn-hacked-login">FORCER LA CONNEXION</button>
         </form>
       </div>
       
@@ -99,5 +100,96 @@
   </div>
 
   <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+
+  <!-- Dynamic Cyber Plexus Background -->
+  <canvas id="cyber-bg"></canvas>
+  <script>
+    (function() {
+      const canvas = document.getElementById('cyber-bg');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      let width = canvas.width = window.innerWidth;
+      let height = canvas.height = window.innerHeight;
+
+      const particles = [];
+      const particleCount = Math.min(80, Math.floor((width * height) / 18000));
+      
+      for (let i = 0; i < particleCount; i++) {
+        particles.push({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          vx: (Math.random() - 0.5) * 0.35,
+          vy: (Math.random() - 0.5) * 0.35,
+          radius: Math.random() * 1.5 + 1
+        });
+      }
+
+      function draw() {
+        ctx.fillStyle = '#05070e';
+        ctx.fillRect(0, 0, width, height);
+
+        // Grid lines
+        ctx.strokeStyle = 'rgba(99, 102, 241, 0.015)';
+        ctx.lineWidth = 1;
+        const gridSize = 48;
+        for (let x = 0; x < width; x += gridSize) {
+          ctx.beginPath();
+          ctx.moveTo(x, 0);
+          ctx.lineTo(x, height);
+          ctx.stroke();
+        }
+        for (let y = 0; y < height; y += gridSize) {
+          ctx.beginPath();
+          ctx.moveTo(0, y);
+          ctx.lineTo(width, y);
+          ctx.stroke();
+        }
+
+        // Draw connections
+        ctx.lineWidth = 0.7;
+        for (let i = 0; i < particleCount; i++) {
+          const p1 = particles[i];
+          for (let j = i + 1; j < particleCount; j++) {
+            const p2 = particles[j];
+            const dist = Math.hypot(p1.x - p2.x, p1.y - p2.y);
+            if (dist < 110) {
+              const alpha = (1 - dist / 110) * 0.08;
+              ctx.strokeStyle = 'rgba(99, 102, 241, ' + alpha + ')';
+              ctx.beginPath();
+              ctx.moveTo(p1.x, p1.y);
+              ctx.lineTo(p2.x, p2.y);
+              ctx.stroke();
+            }
+          }
+        }
+
+        // Draw particles
+        ctx.fillStyle = 'rgba(99, 102, 241, 0.3)';
+        for (let i = 0; i < particleCount; i++) {
+          const p = particles[i];
+          p.x += p.vx;
+          p.y += p.vy;
+
+          if (p.x < 0 || p.x > width) p.vx *= -1;
+          if (p.y < 0 || p.y > height) p.vy *= -1;
+
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        requestAnimationFrame(draw);
+      }
+
+      window.addEventListener('resize', () => {
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+      });
+
+      draw();
+    })();
+  </script>
+
 </body>
 </html>

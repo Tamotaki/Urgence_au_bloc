@@ -1,46 +1,44 @@
-MISSION : URGENCE AU BLOC
+BREFING DE MISSION : URGENCE AU BLOC OPÉRATOIRE
 
-Centre Hospitalier Saint-Louis - Cellule de crise DSI
+Rédigé en urgence par la cellule de crise DSI
 Difficulté : Intermédiaire | Durée estimée : 45 à 90 min
 Catégories : Web, Forensics, Cryptographie
 
 
-1. CONTEXTE OPÉRATIONNEL
+--- 1. CE QU'IL SE PASSE ---
 
-Le 18 novembre 2024 à 03h48, le SOC (Security Operations Center) du Centre Hospitalier Saint-Louis a détecté une activité suspecte sur le serveur BlocManager. Cette application interne est critique : elle gère les plannings du bloc opératoire ainsi que les dossiers des patients en pré-opératoire.
+Ce matin à 03h48, notre équipe sécurité a repéré une intrusion majeure sur l'application BlocManager. C'est la catastrophe : l'ensemble des bases de données de l'hôpital vient d'être chiffré par le ransomware Solaris. Le groupe exige une rançon faramineuse pour nous donner la clé de déchiffrement.
 
-Quelques minutes plus tard, l'alerte est confirmée : un ransomware a été exécuté sur le serveur. L'ensemble des sauvegardes locales ont été chiffrées par un groupe se revendiquant sous le nom de S0lar1s. Une note de rançon exige le paiement de 0.5 BTC sous 72 heures sous peine de destruction définitive de la clé de déchiffrement.
+Le vrai problème ? Les chirurgies programmées démarrent à 07h30. Sans les dossiers des patients et les plannings d'affectation, les médecins sont totalement aveugles. Impossible de reporter ces opérations sans risquer la vie de nos patients.
 
-Le problème : Les premières interventions chirurgicales programmées débutent à 07h30. Sans accès aux plannings ni aux dossiers des patients, le bloc opératoire est paralysé. Reporter ces interventions mettrait directement en danger la vie des patients.
-
-La cellule de crise refuse catégoriquement de payer la rançon. Vous êtes mobilisé en urgence pour intervenir sur le serveur et restaurer la situation.
+Nous refusons de céder au chantage. On a besoin de toi en urgence pour infiltrer le serveur, remonter la trace de l'attaquant et sauver la sauvegarde système avant le début des interventions.
 
 
-2. OBJECTIFS DE LA MISSION
+--- 2. TA MISSION ---
 
-Votre objectif principal est de restaurer la sauvegarde chiffrée /tmp/backup.xor avant 07h00. Pour y parvenir, vous devrez reconstituer le chemin d'attaque emprunté par l'intrus et récupérer la clé de déchiffrement qu'il a laissée sur le serveur.
+Ta priorité absolue est de décoder le backup bloqué dans `/tmp/backup.xor` avant 07h00. Pour cela, tu vas devoir analyser l'historique de l'attaque et mettre la main sur la clé de déchiffrement que le pirate a laissée traîner sur la machine.
 
 - Cible à analyser : Un serveur Linux simulant l'environnement compromis.
 - Fichier chiffré : /tmp/backup.xor
 - Flag attendu : Une clé de restauration système au format CTF{...} présente dans le fichier restauré.
 
 
-3. SCÉNARIO D'ATTAQUE (INVESTIGATIONS)
+--- 3. LE FIL DE L'ENQUÊTE ---
 
 Le SOC a identifié les phases suivantes de l'intrusion, que vous devez reproduire et analyser :
 
-Étape 1 : Accès Initial (Web)
+1. Trouver la brèche (Portail Web)
 L'attaquant a ciblé l'interface de connexion du BlocManager :
 http://<IP_BLOCMANAGER>/login
 
 Aucun compte d'urgence n'est documenté par la DSI. Vous devez trouver un moyen de contourner cette authentification. Les premières analyses indiquent que l'application n'a pas été mise à jour depuis plusieurs mois et présente des faiblesses critiques dans sa gestion des entrées utilisateur.
 
-Étape 2 : Élévation et Pivot (SSH)
+2. Prendre le contrôle (SSH)
 Une fois l'accès à l'application obtenu, l'attaquant a cherché des identifiants système. Une note interne ou une configuration mal sécurisée sur le tableau de bord d'administration lui a permis de rebondir.
 Identifiez ces informations pour vous connecter en SSH sur la machine :
 ssh operateur@<IP_SERVEUR> -p 22
 
-Étape 3 : Analyse Forense (Logs)
+3. Traquer ses pas (Logs)
 Une fois connecté sur le serveur, vous devez analyser l'activité de l'attaquant. Les répertoires d'intérêt sont :
 - /var/log/apache2/access.log (Journal des requêtes HTTP)
 - /var/log/apache2/error.log (Erreurs du serveur web)
@@ -48,14 +46,14 @@ Une fois connecté sur le serveur, vous devez analyser l'activité de l'attaquan
 
 L'intrusion s'est déroulée sur une fenêtre d'environ 10 minutes au milieu d'un trafic légitime dense (postes infirmiers, requêtes de monitoring, scanners automatiques). Isolez l'adresse IP de l'attaquant et analysez ses requêtes pour comprendre ses actions. L'attaquant semble avoir fait une erreur critique en laissant fuiter une information sensible dans l'un des paramètres de ses requêtes.
 
-Étape 4 : Déchiffrement de la Sauvegarde
+4. Libérer le backup (Déchiffrement)
 Une fois la clé de chiffrement identifiée dans les logs, utilisez le script Python fourni sur le serveur pour déchiffrer la sauvegarde :
 python3 /tmp/ransomware_fake.py /tmp/backup.xor <CLE>
 
 Le fichier déchiffré contiendra la clé de restauration système (le flag).
 
 
-4. OUTILS RECOMMANDÉS
+--- 4. LA BOÎTE À OUTILS ---
 
 - Analyse Web : Navigateur web, curl, ou outil d'interception (Burp Suite).
 - Accès SSH : Client SSH standard (ssh).
@@ -63,14 +61,14 @@ Le fichier déchiffré contiendra la clé de restauration système (le flag).
 - Déchiffrement : Script /tmp/ransomware_fake.py fourni dans l'environnement.
 
 
-5. RÈGLES DU JEU
+--- 5. RÈGLES À RESPECTER ---
 
 - Le brute-force sur les formulaires d'authentification (Web et SSH) est inutile et interdit. Toutes les étapes reposent sur l'exploitation logique ou l'analyse d'indices.
 - Ne modifiez pas les fichiers système en dehors du périmètre de résolution.
 - Restez concentré sur le serveur du challenge.
 
 
-6. INDICES (À n'utiliser qu'en cas de blocage)
+--- 6. UN COUP DE POUCE ? (INDICES) ---
 
 Indice 1 : Blocage sur la page de connexion
 Le formulaire de connexion construit sa requête SQL de manière dynamique sans protection. Une injection SQL de contournement d'authentification (Authentication Bypass) permet de se connecter sans connaître le mot de passe. Pensez à utiliser des caractères de commentaires SQL (-- ou #) pour neutraliser la vérification du mot de passe.

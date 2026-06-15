@@ -12,12 +12,31 @@ chmod 644 /var/log/apache2/error.log
 cp /app/files/ransomware_fake.py /tmp/ransomware_fake.py
 chmod 755 /tmp/ransomware_fake.py
 
+# Setup trigger for SSH login (Step 3)
+echo "touch /tmp/.step3_done" >> /home/operateur/.bashrc
+chown operateur:operateur /home/operateur/.bashrc
+
+# Setup command audit in system-wide bashrc (Step 4)
+cat << 'EOF' >> /etc/bash.bashrc
+check_history_cmd() {
+  local last_cmd
+  last_cmd=$(fc -ln -1 2>/dev/null)
+  if [[ "$last_cmd" =~ "access.log" || "$last_cmd" =~ "apache2" || "$last_cmd" =~ "S3cr3tK3y!" ]]; then
+    touch /tmp/.step4_done 2>/dev/null
+  fi
+}
+if [[ ! "$PROMPT_COMMAND" =~ "check_history_cmd" ]]; then
+  PROMPT_COMMAND="check_history_cmd; $PROMPT_COMMAND"
+fi
+EOF
+
+
 # 2. Start SSH daemon
 /usr/sbin/sshd
 
 # 3. Start ttyd listening on localhost:7681, running bash as 'attacker'
 # We use su - attacker so the shell drops privileges to the attacker user
-ttyd -p 7681 -b /terminal -i 127.0.0.1 su - attacker &
+ttyd -p 7681 -b /terminal -i 127.0.0.1 -t scrollback=100000 su - attacker &
 
 # 4. Start the Flask application
 python3 /app/web/app.py &
