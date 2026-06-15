@@ -12,15 +12,20 @@ Ce matin à 03h48, notre équipe sécurité a repéré une intrusion majeure sur
 
 Le problème critique : les chirurgies programmées démarrent à 07h30. Sans les dossiers des patients et les plannings d'affectation, les médecins ne peuvent pas opérer. Impossible de reporter ces opérations sans risquer la vie de nos patients.
 
-Nous refusons de céder au chantage. Nous avons besoin de votre aide pour infiltrer le serveur, remonter la trace de l'attaquant et sauver la sauvegarde système avant le début des interventions.
+> [!WARNING]
+> **Urgence vitale :** Les opérations chirurgicales débutent à 07h30. Sans accès aux dossiers patients ni aux plannings, les interventions ne pourront pas avoir lieu. Il est interdit de céder au chantage du collectif Solaris.
+
+Nous avons besoin de votre aide pour infiltrer le serveur, remonter la trace de l'attaquant et sauver la sauvegarde système avant le début des interventions.
 
 ## 2. Votre mission
 
 Votre priorité absolue est de décoder le backup bloqué dans `/tmp/backup.xor` avant 07h00. Pour cela, vous allez devoir analyser l'historique de l'attaque et mettre la main sur la clé de déchiffrement que le pirate a laissée dans l'environnement.
 
-* Cible à analyser : Serveur Linux simulant l'environnement compromis.
-* Fichier chiffré : `/tmp/backup.xor`
-* Flag attendu : Une clé de restauration système au format `CTF{...}` présente dans le fichier restauré.
+> [!IMPORTANT]
+> **Objectifs techniques :**
+> * Cible à analyser : Serveur Linux simulant l'environnement compromis.
+> * Fichier chiffré : `/tmp/backup.xor`
+> * Flag attendu : Une clé de restauration système au format `CTF{...}` présente dans le fichier restauré.
 
 ## 3. Déroulement de l'enquête
 
@@ -60,9 +65,11 @@ Le fichier déchiffré contiendra la clé de restauration système (le flag).
 
 ## 5. Règles à respecter
 
-* Le brute-force sur les formulaires d'authentification (Web et SSH) est inutile. Toutes les étapes reposent sur l'exploitation logique ou l'analyse d'indices.
-* Ne modifiez pas les fichiers système en dehors du périmètre de résolution.
-* Restez concentré sur le serveur du challenge.
+> [!IMPORTANT]
+> **Règles d'engagement :**
+> * Le brute-force sur les formulaires d'authentification (Web et SSH) est inutile. Toutes les étapes reposent sur l'exploitation logique ou l'analyse d'indices.
+> * Ne modifiez pas les fichiers système en dehors du périmètre de résolution.
+> * Restez concentré sur le serveur du challenge.
 
 ## 6. Indices
 
@@ -70,8 +77,11 @@ Le fichier déchiffré contiendra la clé de restauration système (le flag).
 Le formulaire de connexion construit sa requête SQL de manière dynamique sans protection. Une injection SQL de contournement d'authentification (Authentication Bypass) permet de se connecter sans connaître le mot de passe. Utilisez des caractères de commentaires SQL (`--` ou `#`) pour neutraliser la vérification du mot de passe.
 
 ### Indice 2 : Analyse des logs
-Pour identifier l'adresse IP de l'attaquant, comptez le nombre de requêtes par adresse IP unique dans `access.log`. Une IP externe présentant un volume anormal de requêtes (notamment des tentatives automatisées sur `/login`) devrait se distinguer rapidement :
-`awk '{print $1}' access.log | sort | uniq -c | sort -rn`
+Pour identifier l'adresse IP de l'attaquant, comptez le nombre de requêtes par adresse IP unique dans `access.log`. Une IP externe présentant un volume anormal de requêtes (notamment des tentatives automatisées sur `/login`) devrait se distinguer rapidement.
+
+> [!TIP]
+> **Commande utile :**
+> `awk '{print $1}' access.log | sort | uniq -c | sort -rn`
 
 ### Indice 3 : Localisation de la clé dans les requêtes
 Une fois l'IP de l'attaquant isolée, inspectez l'intégralité des lignes de log associées à cette IP. Regardez attentivement tous les en-têtes HTTP enregistrés, notamment le User-Agent. L'attaquant y a laissé une configuration sensible.
